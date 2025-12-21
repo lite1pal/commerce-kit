@@ -34,7 +34,7 @@ A minimal, modern e-commerce storefront built with Next.js, Prisma, and PostgreS
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/lite1pal/commerce-kit.git
    cd commerce-kit
    ```
 2. **Install dependencies:**
