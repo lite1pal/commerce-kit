@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export default async function Navbar() {
   const cookieStore = await cookies();
-  const cartId = cookieStore.get("cart_id")?.value; // adjust name if yours differs
+  const cartId = cookieStore.get("cartId")?.value; // adjust name if yours differs
 
   return (
     <header className="border-b">
