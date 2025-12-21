@@ -1,5 +1,7 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
+import CartItemRow from "./components/cart-item-row";
+import ClearCartButton from "./components/clear-cart-button";
 
 export default async function CartPage() {
   const jar = await cookies();
@@ -18,6 +20,7 @@ export default async function CartPage() {
     where: { id: cartId },
     include: {
       items: {
+        orderBy: { createdAt: "asc" },
         include: {
           variant: { include: { product: true } },
         },
@@ -25,7 +28,9 @@ export default async function CartPage() {
     },
   });
 
-  if (!cart || cart.items.length === 0) {
+  const items = cart?.items ?? [];
+
+  if (items.length === 0) {
     return (
       <main className="mx-auto max-w-2xl p-6">
         <h1 className="text-2xl font-semibold">Cart</h1>
@@ -34,26 +39,27 @@ export default async function CartPage() {
     );
   }
 
-  const totalCents = cart.items.reduce(
+  const totalCents = items.reduce(
     (sum, item) => sum + item.quantity * item.variant.priceCents,
     0
   );
 
   return (
     <main className="mx-auto max-w-2xl p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">Cart</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Cart</h1>
+        <ClearCartButton />
+      </div>
 
       <div className="space-y-3">
-        {cart.items.map((item) => (
-          <div key={item.id} className="rounded-2xl border p-4">
-            <div className="font-medium">
-              {item.variant.product.name} — {item.variant.name}
-            </div>
-            <div className="text-slate-600 text-sm">
-              Qty: {item.quantity} ·{" "}
-              {(item.variant.priceCents / 100).toFixed(2)} €
-            </div>
-          </div>
+        {items.map((item) => (
+          <CartItemRow
+            key={item.id}
+            variantId={item.variantId}
+            title={`${item.variant.product.name} — ${item.variant.name}`}
+            priceCents={item.variant.priceCents}
+            quantity={item.quantity}
+          />
         ))}
       </div>
 
@@ -61,6 +67,13 @@ export default async function CartPage() {
         <div className="font-medium">Total</div>
         <div className="font-semibold">{(totalCents / 100).toFixed(2)} €</div>
       </div>
+
+      <a
+        href="/checkout"
+        className="block w-full rounded-xl bg-black px-4 py-2 text-center text-white"
+      >
+        Continue to checkout
+      </a>
     </main>
   );
 }
