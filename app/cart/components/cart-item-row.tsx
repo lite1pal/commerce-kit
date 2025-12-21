@@ -8,13 +8,16 @@ export default function CartItemRow({
   title,
   priceCents,
   quantity,
+  stock,
 }: {
   variantId: string;
   title: string;
   priceCents: number;
   quantity: number;
+  stock: number;
 }) {
   const [pending, startTransition] = useTransition();
+  const atMaxStock = quantity >= stock;
 
   const dec = () =>
     startTransition(async () => {
@@ -38,6 +41,9 @@ export default function CartItemRow({
         <div className="text-slate-600 text-sm">
           {(priceCents / 100).toFixed(2)} €
         </div>
+        {atMaxStock && (
+          <div className="text-xs text-amber-600 mt-1">Max stock reached</div>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
@@ -52,8 +58,8 @@ export default function CartItemRow({
         <div className="w-10 text-center">{quantity}</div>
         <button
           onClick={inc}
-          disabled={pending}
-          className="h-9 w-9 rounded-lg border disabled:opacity-60"
+          disabled={pending || atMaxStock}
+          className="h-9 w-9 rounded-lg border disabled:opacity-60 disabled:bg-gray-100 disabled:cursor-not-allowed"
           aria-label="Increase quantity"
         >
           +

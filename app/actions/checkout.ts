@@ -34,6 +34,20 @@ export async function createOrder(formData: FormData) {
   );
 
   const order = await prisma.$transaction(async (tx) => {
+    // Validate stock and decrement per item
+    for (const item of cart.items) {
+      const stock = item.variant.stock;
+      if (stock < item.quantity) {
+        throw new Error(
+          `Insufficient stock for variant ${item.variant.name}. Requested ${item.quantity}, available ${stock}.`
+        );
+      }
+      await tx.variant.update({
+        where: { id: item.variantId },
+        data: { stock: { decrement: item.quantity } },
+      });
+    }
+
     const created = await tx.order.create({
       data: {
         email: emailRaw,

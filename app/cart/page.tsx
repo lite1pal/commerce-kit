@@ -59,6 +59,7 @@ export default async function CartPage() {
             title={`${item.variant.product.name} — ${item.variant.name}`}
             priceCents={item.variant.priceCents}
             quantity={item.quantity}
+            stock={item.variant.stock}
           />
         ))}
       </div>

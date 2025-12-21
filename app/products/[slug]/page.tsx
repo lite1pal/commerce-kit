@@ -52,7 +52,7 @@ export default async function ProductPage({
                 <div className="text-sm text-slate-500">Stock: {v.stock}</div>
               </div>
 
-              <AddToCartForm variantId={v.id} />
+              <AddToCartForm variantId={v.id} stock={v.stock} />
             </div>
           ))}
         </section>
