@@ -40,7 +40,7 @@ export default async function Navbar() {
           {user ? (
             <>
               <span className="text-sm text-neutral-700">{user.email}</span>
-              <form action={logout} method="POST">
+              <form action={logout}>
                 <button
                   type="submit"
                   className="hover:underline text-sm text-neutral-700"
