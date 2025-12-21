@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { validateEmail, validatePassword } from "./validate";
+import { rateLimit } from "@/lib/rateLimit";
 
 const SESSION_COOKIE = "session";
 
@@ -11,6 +12,16 @@ export async function register(formData: FormData) {
   const email = String(formData.get("email") ?? "")
     .toLowerCase()
     .trim();
+
+  // Rate limit by email
+  const rateKey = `register:${email}`;
+  const limit = await rateLimit({ key: rateKey, window: 60, max: 5 });
+  if (!limit.allowed) {
+    return {
+      error: `Too many registration attempts. Try again in ${limit.reset}s.`,
+    };
+  }
+
   const password = String(formData.get("password") ?? "");
   if (!validateEmail(email)) {
     return { error: "Invalid email address." };
@@ -38,6 +49,14 @@ export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "")
     .toLowerCase()
     .trim();
+
+  // Rate limit by email
+  const rateKey = `login:${email}`;
+  const limit = await rateLimit({ key: rateKey, window: 60, max: 10 });
+  if (!limit.allowed) {
+    return { error: `Too many login attempts. Try again in ${limit.reset}s.` };
+  }
+
   const password = String(formData.get("password") ?? "");
   if (!validateEmail(email)) {
     return { error: "Invalid email address." };
