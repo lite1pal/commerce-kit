@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { markOrderPaid } from "../actions/order";
 
 export default async function ThankYouPage({
   searchParams,
@@ -60,6 +61,21 @@ export default async function ThankYouPage({
           </div>
         ))}
       </div>
+
+      {order.status !== "PAID" && (
+        <form
+          action={markOrderPaid}
+          className="rounded-2xl border p-4 space-y-2"
+        >
+          <input type="hidden" name="orderId" value={order.id} />
+          <button className="w-full rounded-xl bg-black px-4 py-2 text-white">
+            Mark as paid (MVP)
+          </button>
+          <p className="text-xs text-slate-600">
+            This is a placeholder until real payments are wired.
+          </p>
+        </form>
+      )}
 
       <a href="/products" className="inline-block rounded-xl border px-4 py-2">
         Back to products
