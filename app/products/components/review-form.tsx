@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { addProductReview } from "../review-actions";
 
 function ReviewForm({
@@ -10,35 +7,13 @@ function ReviewForm({
   productId: string;
   userId: string;
 }) {
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
-    try {
-      await addProductReview({ productId, userId, rating, comment });
-      setComment("");
-      // Optionally refresh reviews
-    } catch (err) {
-      setError("Failed to submit review.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   return (
-    <form className="mt-4 space-y-2" onSubmit={handleSubmit}>
+    <form className="mt-4 space-y-2" action={addProductReview}>
+      <input type="hidden" name="productId" value={productId} />
+      <input type="hidden" name="userId" value={userId} />
       <label className="block">
         <span>Rating:</span>
-        <select
-          value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
-          className="ml-2"
-        >
+        <select name="rating" defaultValue={5} className="ml-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <option key={n} value={n}>
               {n}
@@ -48,20 +23,13 @@ function ReviewForm({
       </label>
       <label className="block">
         <span>Comment:</span>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="w-full border p-2"
-          rows={3}
-        />
+        <textarea name="comment" className="w-full border p-2" rows={3} />
       </label>
-      {error && <div className="text-red-500 text-sm">{error}</div>}
       <button
         type="submit"
-        disabled={submitting}
         className="bg-blue-600 text-white px-4 py-2 rounded"
       >
-        {submitting ? "Submitting..." : "Submit Review"}
+        Submit Review
       </button>
     </form>
   );
