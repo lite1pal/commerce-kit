@@ -25,7 +25,6 @@ CREATE TABLE "ProductImage" (
     CONSTRAINT "ProductImage_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "Variant" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
@@ -37,6 +36,7 @@ CREATE TABLE "Variant" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Variant_pkey" PRIMARY KEY ("id")
+    ,CONSTRAINT stock_nonnegative CHECK (stock >= 0)
 );
 
 -- CreateTable
