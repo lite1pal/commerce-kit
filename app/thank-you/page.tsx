@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { markOrderPaid } from "../actions/order";
+import Link from "next/link";
 
 export default async function ThankYouPage({
   searchParams,
@@ -79,9 +80,12 @@ export default async function ThankYouPage({
         </form>
       )}
 
-      <a href="/products" className="inline-block rounded-xl border px-4 py-2">
+      <Link
+        href="/products"
+        className="inline-block rounded-xl border px-4 py-2"
+      >
         Back to products
-      </a>
+      </Link>
     </main>
   );
 }

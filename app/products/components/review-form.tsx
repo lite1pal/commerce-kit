@@ -1,11 +1,6 @@
 import { addProductReview } from "../review-actions";
 import Button from "@/app/components/Button";
-import {
-  Input,
-  Textarea,
-  Select,
-  StarRating,
-} from "@/app/components/FormControls";
+import { Input, Textarea, StarRating } from "@/app/components/FormControls";
 
 function ReviewForm({
   productId,

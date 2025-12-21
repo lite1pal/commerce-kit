@@ -1,6 +1,4 @@
-import Button from "@/app/components/Button";
 import prisma from "@/lib/prisma";
-import { validateEmail } from "../auth/validate";
 import OrderEmailForm from "./order-email-form";
 
 export default async function OrdersPage({
