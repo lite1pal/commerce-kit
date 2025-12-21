@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import Button from "@/app/components/Button";
 import { login } from "../actions";
+import { validateEmail, validatePassword } from "../validate";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
@@ -11,12 +12,21 @@ export default function LoginForm() {
 
   async function onSubmit(formData: FormData) {
     setError(null);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!validatePassword(password)) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
     startTransition(async () => {
       const res = await login(formData);
       if (res?.error) setError(res.error);
+      else router.replace("/collections");
     });
-
-    router.replace("/collections");
   }
 
   return (

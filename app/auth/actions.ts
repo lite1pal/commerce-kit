@@ -1,7 +1,9 @@
 "use server";
+
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { validateEmail, validatePassword } from "./validate";
 
 const SESSION_COOKIE = "session";
 
@@ -10,8 +12,11 @@ export async function register(formData: FormData) {
     .toLowerCase()
     .trim();
   const password = String(formData.get("password") ?? "");
-  if (!email || !password || password.length < 8) {
-    return { error: "Invalid email or password." };
+  if (!validateEmail(email)) {
+    return { error: "Invalid email address." };
+  }
+  if (!validatePassword(password)) {
+    return { error: "Password must be at least 8 characters." };
   }
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -34,8 +39,11 @@ export async function login(formData: FormData) {
     .toLowerCase()
     .trim();
   const password = String(formData.get("password") ?? "");
-  if (!email || !password) {
-    return { error: "Invalid email or password." };
+  if (!validateEmail(email)) {
+    return { error: "Invalid email address." };
+  }
+  if (!validatePassword(password)) {
+    return { error: "Password must be at least 8 characters." };
   }
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return { error: "Invalid credentials." };

@@ -1,7 +1,9 @@
 "use client";
+
 import { useState, useTransition } from "react";
 import Button from "@/app/components/Button";
 import { register } from "../actions";
+import { validateEmail, validatePassword } from "../validate";
 import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
@@ -11,12 +13,21 @@ export default function RegisterForm() {
 
   async function onSubmit(formData: FormData) {
     setError(null);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!validatePassword(password)) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
     startTransition(async () => {
       const res = await register(formData);
       if (res?.error) setError(res.error);
+      else router.replace("/collections");
     });
-
-    router.replace("/collections");
   }
 
   return (

@@ -1,5 +1,6 @@
 import Button from "@/app/components/Button";
 import prisma from "@/lib/prisma";
+import { validateEmail } from "../auth/validate";
 
 export default async function OrdersPage({
   searchParams,
@@ -16,25 +17,13 @@ export default async function OrdersPage({
       })
     : [];
 
+  // Client-side email validation
+  // (This page is a server component, so we use a form handler below)
   return (
     <main className="mx-auto max-w-2xl p-6 space-y-4">
       <h1 className="text-2xl font-semibold">My orders</h1>
 
-      <form className="rounded-2xl border p-4 space-y-3">
-        <label className="block">
-          <div className="text-sm font-medium">Email</div>
-          <input
-            name="email"
-            type="email"
-            defaultValue={email ?? ""}
-            className="mt-1 w-full rounded-xl border px-3 py-2"
-            placeholder="you@company.com"
-          />
-        </label>
-        <Button type="submit" fullWidth>
-          Find orders
-        </Button>
-      </form>
+      <OrderEmailForm defaultEmail={email ?? ""} />
 
       {email && orders.length === 0 && (
         <p className="text-slate-600">No orders found for {email}.</p>
@@ -65,5 +54,47 @@ export default async function OrdersPage({
         </div>
       )}
     </main>
+  );
+}
+
+// Client component for email validation
+("use client");
+import { useState } from "react";
+function OrderEmailForm({ defaultEmail }: { defaultEmail: string }) {
+  const [email, setEmail] = useState(defaultEmail);
+  const [error, setError] = useState<string | null>(null);
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!validateEmail(email)) {
+      e.preventDefault();
+      setError("Please enter a valid email address.");
+    }
+  }
+
+  return (
+    <form
+      className="rounded-2xl border p-4 space-y-3"
+      method="GET"
+      onSubmit={onSubmit}
+    >
+      <label className="block">
+        <div className="text-sm font-medium">Email</div>
+        <input
+          name="email"
+          type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError(null);
+          }}
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+          placeholder="you@company.com"
+        />
+      </label>
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <Button type="submit" fullWidth>
+        Find orders
+      </Button>
+    </form>
   );
 }
