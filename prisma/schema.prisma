@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String          @id @default(cuid())
+  email     String          @unique
   password  String // hashed password
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  reviews   ProductReview[]
 }
 
 model Product {
@@ -27,6 +28,7 @@ model Product {
   images      ProductImage[]
   variants    Variant[]
   collections ProductCollection[]
+  reviews     ProductReview[]
 
   @@index([active])
 }
@@ -150,4 +152,22 @@ model ProductCollection {
   @@id([productId, collectionId])
   @@index([collectionId])
   @@index([productId])
+}
+
+// Product reviews
+model ProductReview {
+  id        String   @id @default(cuid())
+  rating    Int // 1-5 stars
+  comment   String?
+  productId String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([userId])
+  @@index([rating])
 }

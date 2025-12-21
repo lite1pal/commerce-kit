@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import AddToCartForm from "../components/add-to-cart-form";
+import { ProductReviews } from "../components/product-reviews";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -29,6 +30,8 @@ export async function generateMetadata({
   };
 }
 
+import { getCurrentUser } from "@/app/auth/actions";
+
 export default async function ProductPage({
   params,
 }: {
@@ -40,6 +43,7 @@ export default async function ProductPage({
     where: { slug },
     include: { images: true, variants: true },
   });
+  const user = await getCurrentUser();
 
   if (!product || !product.active) return notFound();
   return (
@@ -86,6 +90,9 @@ export default async function ProductPage({
       ) : (
         <p className="text-slate-600">No variants available.</p>
       )}
+
+      {/* Product reviews section */}
+      <ProductReviews productId={product.id} userId={user?.id} />
     </main>
   );
 }
