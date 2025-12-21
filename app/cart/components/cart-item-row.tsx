@@ -1,6 +1,8 @@
 "use client";
 
 import { useTransition } from "react";
+
+import Button from "@/app/components/Button";
 import { removeFromCart, setCartItemQuantity } from "@/app/actions/cart";
 
 export default function CartItemRow({
@@ -47,31 +49,34 @@ export default function CartItemRow({
       </div>
 
       <div className="flex items-center gap-3">
-        <button
+        <Button
           onClick={dec}
           disabled={pending}
-          className="w-8 h-8 flex items-center justify-center disabled:opacity-40 hover:opacity-60 transition-opacity"
           aria-label="Decrease quantity"
+          className="w-8 h-8 flex items-center justify-center p-0"
+          variant="secondary"
         >
           −
-        </button>
+        </Button>
         <div className="w-8 text-center">{quantity}</div>
-        <button
+        <Button
           onClick={inc}
           disabled={pending || atMaxStock}
-          className="w-8 h-8 flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
           aria-label="Increase quantity"
+          className="w-8 h-8 flex items-center justify-center p-0"
+          variant="secondary"
         >
           +
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={remove}
           disabled={pending}
-          className="ml-2 text-sm text-neutral-500 hover:text-black transition-colors disabled:opacity-40"
+          className="ml-2 text-sm"
+          variant="secondary"
         >
           Remove
-        </button>
+        </Button>
       </div>
     </div>
   );

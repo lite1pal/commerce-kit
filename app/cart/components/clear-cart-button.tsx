@@ -1,18 +1,21 @@
 "use client";
 
 import { useTransition } from "react";
+
+import Button from "@/app/components/Button";
 import { clearCart } from "@/app/actions/cart";
 
 export default function ClearCartButton() {
   const [pending, startTransition] = useTransition();
 
   return (
-    <button
+    <Button
       onClick={() => startTransition(clearCart)}
       disabled={pending}
-      className="text-sm text-neutral-500 hover:text-black transition-colors disabled:opacity-40"
+      className="text-sm"
+      variant="secondary"
     >
       {pending ? "Clearing..." : "Clear cart"}
-    </button>
+    </Button>
   );
 }

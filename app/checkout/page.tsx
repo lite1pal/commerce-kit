@@ -1,3 +1,4 @@
+import Button from "@/app/components/Button";
 import { createOrder } from "@/app/actions/checkout";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
@@ -60,9 +61,9 @@ export default async function CheckoutPage() {
               />
             </label>
 
-            <button className="w-full bg-black px-4 py-3 text-white text-sm hover:opacity-80 transition-opacity">
+            <Button type="submit" fullWidth>
               Place order
-            </button>
+            </Button>
             <p className="text-xs text-neutral-400">
               No payment yet — this just creates the order.
             </p>

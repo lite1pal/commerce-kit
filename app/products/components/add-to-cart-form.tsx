@@ -1,6 +1,8 @@
 "use client";
 
 import { useTransition } from "react";
+
+import Button from "@/app/components/Button";
 import { addToCart } from "@/app/actions/cart";
 
 export default function AddToCartForm({
@@ -21,17 +23,14 @@ export default function AddToCartForm({
         })
       }
     >
-      <button
+      <Button
         type="submit"
+        fullWidth
         disabled={pending || outOfStock}
-        className="w-full px-4 py-3 text-sm transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{
-          backgroundColor: outOfStock ? "#d1d5db" : "#000",
-          color: "#fff",
-        }}
+        aria-disabled={pending || outOfStock}
       >
         {pending ? "Adding..." : outOfStock ? "Out of stock" : "Add to cart"}
-      </button>
+      </Button>
     </form>
   );
 }
