@@ -1,15 +1,32 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import Search from "../components/Search";
 
 export const metadata: Metadata = {
   title: "Products",
   description: "Browse all products in the CommerceKit storefront.",
 };
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string }>;
+}) {
+  const query = (await searchParams)?.q?.trim();
+  if (query === "") redirect("/products");
+
   const products = await prisma.product.findMany({
-    where: { active: true },
+    where: {
+      active: true,
+      ...(query && {
+        name: {
+          contains: query,
+          mode: "insensitive",
+        },
+      }),
+    },
     orderBy: { createdAt: "desc" },
     include: {
       images: { take: 1 },
@@ -20,7 +37,7 @@ export default async function ProductsPage() {
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-3xl font-semibold">Products</h1>
-
+      <Search query={query} />
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((p) => {
           const img = p.images[0]?.url;
