@@ -7,6 +7,10 @@ import Search from "../components/Search";
 export const metadata: Metadata = {
   title: "Products",
   description: "Browse all products in the CommerceKit storefront.",
+
+  alternates: {
+    canonical: `${process.env.APP_URL}/products`,
+  },
 };
 
 export default async function ProductsPage({
@@ -17,14 +21,19 @@ export default async function ProductsPage({
   const query = (await searchParams)?.q?.trim();
   if (query === "") redirect("/products");
 
+  // Split query into words and search for products containing all words
+  const words = query ? query.split(/\s+/).filter(Boolean) : [];
+
   const products = await prisma.product.findMany({
     where: {
       active: true,
-      ...(query && {
-        name: {
-          contains: query,
-          mode: "insensitive",
-        },
+      ...(words.length > 0 && {
+        AND: words.map((word) => ({
+          name: {
+            contains: word,
+            mode: "insensitive",
+          },
+        })),
       }),
     },
     orderBy: { createdAt: "desc" },
