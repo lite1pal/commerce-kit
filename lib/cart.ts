@@ -36,3 +36,16 @@ export async function getOrCreateCartId(): Promise<string> {
 
   return cartId;
 }
+
+export async function getCartItemCount() {
+  const jar = await cookies();
+  const cartId = jar.get("cartId")?.value;
+  if (!cartId) return 0;
+
+  const result = await prisma.cartItem.aggregate({
+    where: { cartId },
+    _sum: { quantity: true },
+  });
+
+  return result._sum.quantity ?? 0;
+}

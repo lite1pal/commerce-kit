@@ -2,8 +2,8 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 
 export default async function Navbar() {
-  const cookieStore = await cookies();
-  const cartId = cookieStore.get("cartId")?.value; // adjust name if yours differs
+  const jar = await cookies();
+  const cartId = jar.get("cartId")?.value; // adjust name if yours differs
 
   return (
     <header className="border-b">
