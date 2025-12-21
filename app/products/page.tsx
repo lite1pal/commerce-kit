@@ -14,9 +14,6 @@ export default async function ProductsPage() {
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-3xl font-semibold">Products</h1>
-      <p className="mt-2 text-sm text-neutral-600">
-        Minimal catalog. We’ll add cart + checkout next.
-      </p>
 
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((p) => {
