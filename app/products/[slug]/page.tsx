@@ -15,9 +15,6 @@ export default async function ProductPage({
   });
 
   if (!product || !product.active) return notFound();
-
-  const v = product.variants[0];
-
   return (
     <main className="mx-auto max-w-3xl p-6 space-y-6">
       <div className="space-y-2">
@@ -41,19 +38,23 @@ export default async function ProductPage({
         </div>
       ) : null}
 
-      {v ? (
-        <section className="rounded-2xl border p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">{v.name}</div>
-              <div className="text-slate-600">
-                {(v.priceCents / 100).toFixed(2)} €
+      {product.variants.length ? (
+        <section className="space-y-3">
+          {product.variants.map((v) => (
+            <div key={v.id} className="rounded-2xl border p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{v.name}</div>
+                  <div className="text-slate-600">
+                    {(v.priceCents / 100).toFixed(2)} €
+                  </div>
+                </div>
+                <div className="text-sm text-slate-500">Stock: {v.stock}</div>
               </div>
-            </div>
-            <div className="text-sm text-slate-500">Stock: {v.stock}</div>
-          </div>
 
-          <AddToCartForm variantId={v.id} />
+              <AddToCartForm variantId={v.id} />
+            </div>
+          ))}
         </section>
       ) : (
         <p className="text-slate-600">No variants available.</p>

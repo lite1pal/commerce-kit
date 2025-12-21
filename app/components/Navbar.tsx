@@ -12,6 +12,9 @@ export default async function Navbar() {
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
+          <Link href="/collections" className="hover:underline">
+            Collections
+          </Link>
           <Link href="/products" className="hover:underline">
             Products
           </Link>

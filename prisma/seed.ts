@@ -12,6 +12,8 @@ const prisma = new PrismaClient({
 
 async function main() {
   // wipe (safe for local dev)
+  await prisma.productCollection.deleteMany();
+  await prisma.collection.deleteMany();
   await prisma.cartItem.deleteMany();
   await prisma.cart.deleteMany();
   await prisma.orderItem.deleteMany();
@@ -19,6 +21,22 @@ async function main() {
   await prisma.productImage.deleteMany();
   await prisma.variant.deleteMany();
   await prisma.product.deleteMany();
+
+  const apparel = await prisma.collection.create({
+    data: {
+      name: "Apparel",
+      slug: "apparel",
+      description: "Clothing and wearable items",
+    },
+  });
+
+  const home = await prisma.collection.create({
+    data: {
+      name: "Home",
+      slug: "home",
+      description: "Home and lifestyle items",
+    },
+  });
 
   const product = await prisma.product.create({
     data: {
@@ -61,7 +79,18 @@ async function main() {
     },
   });
 
-  console.log("Seeded:", { product: product.slug, product2: product2.slug });
+  await prisma.productCollection.create({
+    data: { productId: product.id, collectionId: apparel.id },
+  });
+
+  await prisma.productCollection.create({
+    data: { productId: product2.id, collectionId: home.id },
+  });
+
+  console.log("Seeded:", {
+    collections: [apparel.slug, home.slug],
+    products: [product.slug, product2.slug],
+  });
 }
 
 main()
