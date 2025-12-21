@@ -6,10 +6,11 @@ import type { Metadata } from "next";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const slug = (await params).slug;
   const collection = await prisma.collection.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: { name: true, description: true },
   });
   if (!collection) return {};

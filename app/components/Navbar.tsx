@@ -1,8 +1,10 @@
 import { getCartItemCount } from "@/lib/cart";
 import Link from "next/link";
+import { getCurrentUser, logout } from "../auth/actions";
 
 export default async function Navbar() {
   const count = await getCartItemCount();
+  const user = await getCurrentUser();
 
   return (
     <header className="mb-8">
@@ -33,6 +35,37 @@ export default async function Navbar() {
             Orders
           </Link>
         </nav>
+
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <span className="text-sm text-neutral-700">{user.email}</span>
+              <form action={logout} method="POST">
+                <button
+                  type="submit"
+                  className="hover:underline text-sm text-neutral-700"
+                >
+                  Logout
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="hover:underline text-sm text-neutral-700"
+              >
+                Login
+              </Link>
+              <Link
+                href="/auth/register"
+                className="hover:underline text-sm text-neutral-700"
+              >
+                Register
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
