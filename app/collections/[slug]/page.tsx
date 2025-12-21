@@ -1,6 +1,32 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const collection = await prisma.collection.findUnique({
+    where: { slug: params.slug },
+    select: { name: true, description: true },
+  });
+  if (!collection) return {};
+  return {
+    title: collection.name,
+    description: collection.description || undefined,
+    openGraph: {
+      title: collection.name,
+      description: collection.description || undefined,
+      type: "website",
+    },
+    twitter: {
+      title: collection.name,
+      description: collection.description || undefined,
+    },
+  };
+}
 
 export default async function CollectionPage({
   params,

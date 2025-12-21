@@ -1,6 +1,31 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import AddToCartForm from "../components/add-to-cart-form";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const product = await prisma.product.findUnique({
+    where: { slug: params.slug },
+    select: { name: true, description: true },
+  });
+  if (!product) return {};
+  return {
+    title: product.name,
+    description: product.description || undefined,
+    openGraph: {
+      title: product.name,
+      description: product.description || undefined,
+    },
+    twitter: {
+      title: product.name,
+      description: product.description || undefined,
+    },
+  };
+}
 
 export default async function ProductPage({
   params,

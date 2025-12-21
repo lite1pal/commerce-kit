@@ -1,5 +1,11 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Collections",
+  description: "Browse all product collections in the CommerceKit storefront.",
+};
 
 export default async function CollectionsPage() {
   const collections = await prisma.collection.findMany({
