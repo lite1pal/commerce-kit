@@ -2,10 +2,15 @@ import Button from "@/app/components/Button";
 import { createOrder } from "@/app/actions/checkout";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { getCurrentUser } from "../auth/actions";
 
 export default async function CheckoutPage() {
   const jar = await cookies();
   const cartId = jar.get("cartId")?.value;
+
+  const user = await getCurrentUser();
+
+  const userEmail = user?.email;
 
   const cart = cartId
     ? await prisma.cart.findUnique({
@@ -25,6 +30,11 @@ export default async function CheckoutPage() {
   return (
     <main className="mx-auto max-w-2xl p-6 space-y-4">
       <h1 className="text-2xl font-semibold">Checkout</h1>
+      {user && (
+        <div className="mb-2 text-sm text-neutral-700">
+          Logged in as <span className="font-medium">{user.email}</span>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <p className="text-slate-600">Your cart is empty.</p>
@@ -55,6 +65,7 @@ export default async function CheckoutPage() {
               <input
                 name="email"
                 type="email"
+                defaultValue={userEmail ?? ""}
                 required
                 className="w-full border px-3 py-2 text-sm"
                 placeholder="you@company.com"
