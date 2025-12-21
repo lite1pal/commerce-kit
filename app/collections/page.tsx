@@ -28,7 +28,9 @@ export default async function CollectionsPage() {
             >
               <div className="text-lg mb-1">{c.name}</div>
               {c.description ? (
-                <div className="text-sm text-neutral-500">{c.description}</div>
+                <div className="text-sm text-neutral-500 dark:text-neutral-200">
+                  {c.description}
+                </div>
               ) : null}
             </Link>
           ))}

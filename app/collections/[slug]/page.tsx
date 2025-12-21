@@ -93,7 +93,7 @@ export default async function CollectionPage({
 
                 <div>
                   <div className="mb-1">{p.name}</div>
-                  <div className="text-sm text-neutral-500">
+                  <div className="text-sm text-neutral-500  dark:text-neutral-200">
                     €{(price / 100).toFixed(2)}
                   </div>
                   {outOfStock && (

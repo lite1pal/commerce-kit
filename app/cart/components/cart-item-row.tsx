@@ -40,7 +40,7 @@ export default function CartItemRow({
     <div className="py-4 border-t flex items-center justify-between gap-4">
       <div className="min-w-0">
         <div className="truncate">{title}</div>
-        <div className="text-sm text-neutral-500">
+        <div className="text-sm text-neutral-500 dark:text-neutral-200">
           €{(priceCents / 100).toFixed(2)}
         </div>
         {atMaxStock && (

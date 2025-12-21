@@ -76,7 +76,7 @@ export default async function ProductPage({
               <div className="flex items-center justify-between">
                 <div>
                   <div>{v.name}</div>
-                  <div className="text-neutral-500">
+                  <div className="text-neutral-500 dark:text-neutral-200">
                     €{(v.priceCents / 100).toFixed(2)}
                   </div>
                 </div>

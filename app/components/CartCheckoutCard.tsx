@@ -7,7 +7,7 @@ export default function CartCheckoutCard({
 }) {
   return (
     <div className="fixed bottom-4 right-4 z-50 w-full max-w-xs">
-      <div className="bg-white border rounded-xl shadow-lg p-4 flex flex-col gap-3 items-center">
+      <div className="bg-white dark:bg-neutral-900 border dark:border-neutral-700 rounded-xl shadow-lg p-4 flex flex-col gap-3 items-center transition-colors">
         <div className="flex items-center justify-between w-full">
           <span className="text-base">Cart total</span>
           <span className="font-semibold">
@@ -16,7 +16,7 @@ export default function CartCheckoutCard({
         </div>
         <Link
           href="/checkout"
-          className="block w-full bg-black px-4 py-3 text-center text-white text-sm rounded-lg hover:opacity-80 transition-opacity"
+          className="block w-full bg-black dark:bg-white px-4 py-3 text-center text-white dark:text-black text-sm rounded-lg hover:opacity-80 transition-opacity"
         >
           Go to checkout
         </Link>

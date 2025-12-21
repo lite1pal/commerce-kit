@@ -47,7 +47,7 @@ export default async function CheckoutPage() {
                   {item.variant.product.name} — {item.variant.name} ×{" "}
                   {item.quantity}
                 </div>
-                <div className="shrink-0 text-neutral-500">
+                <div className="shrink-0 text-neutral-500  dark:text-neutral-200">
                   €
                   {((item.variant.priceCents * item.quantity) / 100).toFixed(2)}
                 </div>

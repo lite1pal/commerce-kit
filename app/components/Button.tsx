@@ -20,8 +20,8 @@ export default function Button({
     "px-4 py-3 sm:cursor-pointer text-sm transition-opacity disabled:opacity-40 disabled:cursor-not-allowed";
   const color =
     variant === "primary"
-      ? "bg-black text-white hover:opacity-80"
-      : "bg-gray-200 text-black hover:bg-gray-300";
+      ? "bg-black text-white dark:bg-white dark:text-black hover:opacity-80"
+      : "bg-gray-200 text-black dark:bg-neutral-800 dark:text-white hover:bg-gray-300 dark:hover:bg-neutral-700";
   const width = fullWidth ? "w-full" : "";
 
   return (
