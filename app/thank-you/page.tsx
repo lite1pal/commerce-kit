@@ -31,6 +31,8 @@ export default async function ThankYouPage({
     );
   }
 
+  const showMvpPay = process.env.NODE_ENV !== "production";
+
   return (
     <main className="mx-auto max-w-2xl p-6 space-y-4">
       <h1 className="text-2xl font-semibold">Thank you 🎉</h1>
@@ -62,7 +64,7 @@ export default async function ThankYouPage({
         ))}
       </div>
 
-      {order.status !== "PAID" && (
+      {showMvpPay && order.status !== "PAID" && (
         <form
           action={markOrderPaid}
           className="rounded-2xl border p-4 space-y-2"
