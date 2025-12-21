@@ -1,9 +1,8 @@
+import { getCartItemCount } from "@/lib/cart";
 import Link from "next/link";
-import { cookies } from "next/headers";
 
 export default async function Navbar() {
-  const jar = await cookies();
-  const cartId = jar.get("cartId")?.value; // adjust name if yours differs
+  const count = await getCartItemCount();
 
   return (
     <header className="border-b">
@@ -16,9 +15,11 @@ export default async function Navbar() {
           <Link href="/products" className="hover:underline">
             Products
           </Link>
+
           <Link href="/cart" className="hover:underline">
-            Cart{cartId ? "" : ""}
+            Cart {count > 0 && `(${count})`}
           </Link>
+
           <Link href="/orders" className="hover:underline">
             Orders
           </Link>
