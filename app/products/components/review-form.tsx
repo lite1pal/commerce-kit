@@ -16,8 +16,8 @@ function ReviewForm({
 }) {
   return (
     <form className="space-y-4" action={addProductReview}>
-      <input type="hidden" name="productId" value={productId} />
-      <input type="hidden" name="userId" value={userId} />
+      <Input type="hidden" name="productId" value={productId} />
+      <Input type="hidden" name="userId" value={userId} />
       <StarRating name="rating" label="Rating" defaultValue={5} />
       <Textarea name="comment" label="Comment" rows={3} fullWidth />
       <Button type="submit" variant="primary" fullWidth>
