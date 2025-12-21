@@ -1,3 +1,4 @@
+import Button from "@/app/components/Button";
 import prisma from "@/lib/prisma";
 
 export default async function OrdersPage({
@@ -30,9 +31,9 @@ export default async function OrdersPage({
             placeholder="you@company.com"
           />
         </label>
-        <button className="w-full rounded-xl bg-black px-4 py-2 text-white">
+        <Button type="submit" fullWidth>
           Find orders
-        </button>
+        </Button>
       </form>
 
       {email && orders.length === 0 && (
