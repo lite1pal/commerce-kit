@@ -51,7 +51,7 @@ export default async function CartPage() {
         <ClearCartButton />
       </div>
 
-      <div className="space-y-3">
+      <div>
         {items.map((item) => (
           <CartItemRow
             key={item.id}
@@ -64,14 +64,14 @@ export default async function CartPage() {
         ))}
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl border p-4">
-        <div className="font-medium">Total</div>
-        <div className="font-semibold">{(totalCents / 100).toFixed(2)} €</div>
+      <div className="flex items-center justify-between pt-6 border-t">
+        <div>Total</div>
+        <div className="text-lg">€{(totalCents / 100).toFixed(2)}</div>
       </div>
 
       <a
         href="/checkout"
-        className="block w-full rounded-xl bg-black px-4 py-2 text-center text-white"
+        className="block w-full bg-black px-4 py-3 text-center text-white text-sm hover:opacity-80 transition-opacity"
       >
         Continue to checkout
       </a>

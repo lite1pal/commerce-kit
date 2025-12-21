@@ -24,9 +24,9 @@ export default async function ProductsPage() {
             <Link
               key={p.id}
               href={`/products/${p.slug}`}
-              className="rounded-2xl border p-4 hover:shadow-sm transition"
+              className="block hover:opacity-80 transition-opacity"
             >
-              <div className="aspect-square w-full overflow-hidden rounded-xl bg-neutral-100">
+              <div className="aspect-square w-full overflow-hidden mb-3">
                 {img ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img

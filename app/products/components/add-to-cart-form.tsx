@@ -24,9 +24,10 @@ export default function AddToCartForm({
       <button
         type="submit"
         disabled={pending || outOfStock}
-        className="w-full rounded-xl px-4 py-2 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+        className="w-full px-4 py-3 text-sm transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
-          backgroundColor: outOfStock ? "#9ca3af" : "#000",
+          backgroundColor: outOfStock ? "#d1d5db" : "#000",
+          color: "#fff",
         }}
       >
         {pending ? "Adding..." : outOfStock ? "Out of stock" : "Add to cart"}

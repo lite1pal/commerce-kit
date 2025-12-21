@@ -40,7 +40,7 @@ export default async function CollectionPage({
       {products.length === 0 ? (
         <p className="mt-6 text-slate-600">No products in this collection.</p>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => {
             const img = p.images[0]?.url;
             const v = p.variants[0];
@@ -51,9 +51,9 @@ export default async function CollectionPage({
               <Link
                 key={p.id}
                 href={`/products/${p.slug}`}
-                className="rounded-2xl border p-4 hover:shadow-sm transition"
+                className="block hover:opacity-80 transition-opacity"
               >
-                <div className="aspect-square w-full overflow-hidden rounded-xl bg-neutral-100">
+                <div className="aspect-square w-full overflow-hidden mb-3">
                   {img ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -64,22 +64,16 @@ export default async function CollectionPage({
                   ) : null}
                 </div>
 
-                <div className="mt-4 flex items-start justify-between gap-3">
-                  <div>
-                    <div className="font-medium">{p.name}</div>
-                    <div className="mt-1 text-sm text-neutral-600">
-                      From €{(price / 100).toFixed(2)}
-                    </div>
-                    {outOfStock ? (
-                      <div className="mt-1 text-xs font-medium text-red-600">
-                        Out of stock
-                      </div>
-                    ) : (
-                      <div className="mt-1 text-xs text-green-700">
-                        In stock
-                      </div>
-                    )}
+                <div>
+                  <div className="mb-1">{p.name}</div>
+                  <div className="text-sm text-neutral-500">
+                    €{(price / 100).toFixed(2)}
                   </div>
+                  {outOfStock && (
+                    <div className="text-xs text-neutral-400 mt-1">
+                      Out of stock
+                    </div>
+                  )}
                 </div>
               </Link>
             );

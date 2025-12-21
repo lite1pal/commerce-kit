@@ -13,18 +13,16 @@ export default async function CollectionsPage() {
       {collections.length === 0 ? (
         <p className="mt-6 text-slate-600">No collections available.</p>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {collections.map((c) => (
             <Link
               key={c.id}
               href={`/collections/${c.slug}`}
-              className="rounded-2xl border p-4 hover:shadow-sm transition"
+              className="block hover:opacity-80 transition-opacity"
             >
-              <div className="font-medium">{c.name}</div>
+              <div className="text-lg mb-1">{c.name}</div>
               {c.description ? (
-                <div className="mt-1 text-sm text-neutral-600">
-                  {c.description}
-                </div>
+                <div className="text-sm text-neutral-500">{c.description}</div>
               ) : null}
             </Link>
           ))}

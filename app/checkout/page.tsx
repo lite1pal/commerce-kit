@@ -29,45 +29,42 @@ export default async function CheckoutPage() {
         <p className="text-slate-600">Your cart is empty.</p>
       ) : (
         <>
-          <div className="rounded-2xl border p-4 space-y-2">
+          <div className="border-t pt-4 space-y-3">
             {items.map((item) => (
-              <div key={item.id} className="flex justify-between gap-4">
+              <div key={item.id} className="flex justify-between gap-4 text-sm">
                 <div className="min-w-0 truncate">
                   {item.variant.product.name} — {item.variant.name} ×{" "}
                   {item.quantity}
                 </div>
-                <div className="shrink-0">
-                  {((item.variant.priceCents * item.quantity) / 100).toFixed(2)}{" "}
+                <div className="shrink-0 text-neutral-500">
                   €
+                  {((item.variant.priceCents * item.quantity) / 100).toFixed(2)}
                 </div>
               </div>
             ))}
-            <div className="mt-3 flex justify-between border-t pt-3 font-semibold">
+            <div className="flex justify-between border-t pt-3">
               <div>Total</div>
-              <div>{(totalCents / 100).toFixed(2)} €</div>
+              <div>€{(totalCents / 100).toFixed(2)}</div>
             </div>
           </div>
 
-          <form
-            action={createOrder}
-            className="rounded-2xl border p-4 space-y-3"
-          >
+          <form action={createOrder} className="border-t pt-4 space-y-4">
             <label className="block">
-              <div className="text-sm font-medium">Email</div>
+              <div className="text-sm mb-2">Email</div>
               <input
                 name="email"
                 type="email"
                 required
-                className="mt-1 w-full rounded-xl border px-3 py-2"
+                className="w-full border px-3 py-2 text-sm"
                 placeholder="you@company.com"
               />
             </label>
 
-            <button className="w-full rounded-xl bg-black px-4 py-2 text-white">
+            <button className="w-full bg-black px-4 py-3 text-white text-sm hover:opacity-80 transition-opacity">
               Place order
             </button>
-            <p className="text-xs text-slate-600">
-              (No payment yet — this just creates the order + snapshots.)
+            <p className="text-xs text-neutral-400">
+              No payment yet — this just creates the order.
             </p>
           </form>
         </>

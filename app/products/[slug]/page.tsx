@@ -25,31 +25,31 @@ export default async function ProductPage({
       </div>
 
       {product.images.length ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {product.images.map((img) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={img.id}
               src={img.url}
               alt={img.alt ?? product.name}
-              className="rounded-xl border"
+              className="w-full"
             />
           ))}
         </div>
       ) : null}
 
       {product.variants.length ? (
-        <section className="space-y-3">
+        <section className="space-y-4">
           {product.variants.map((v) => (
-            <div key={v.id} className="rounded-2xl border p-4 space-y-3">
+            <div key={v.id} className="py-4 border-t space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium">{v.name}</div>
-                  <div className="text-slate-600">
-                    {(v.priceCents / 100).toFixed(2)} €
+                  <div>{v.name}</div>
+                  <div className="text-neutral-500">
+                    €{(v.priceCents / 100).toFixed(2)}
                   </div>
                 </div>
-                <div className="text-sm text-slate-500">Stock: {v.stock}</div>
+                <div className="text-sm text-neutral-400">{v.stock} left</div>
               </div>
 
               <AddToCartForm variantId={v.id} stock={v.stock} />

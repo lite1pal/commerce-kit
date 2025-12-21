@@ -35,31 +35,31 @@ export default function CartItemRow({
     });
 
   return (
-    <div className="rounded-2xl border p-4 flex items-center justify-between gap-4">
+    <div className="py-4 border-t flex items-center justify-between gap-4">
       <div className="min-w-0">
-        <div className="font-medium truncate">{title}</div>
-        <div className="text-slate-600 text-sm">
-          {(priceCents / 100).toFixed(2)} €
+        <div className="truncate">{title}</div>
+        <div className="text-sm text-neutral-500">
+          €{(priceCents / 100).toFixed(2)}
         </div>
         {atMaxStock && (
-          <div className="text-xs text-amber-600 mt-1">Max stock reached</div>
+          <div className="text-xs text-neutral-400 mt-1">Max stock</div>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <button
           onClick={dec}
           disabled={pending}
-          className="h-9 w-9 rounded-lg border disabled:opacity-60"
+          className="w-8 h-8 flex items-center justify-center disabled:opacity-40 hover:opacity-60 transition-opacity"
           aria-label="Decrease quantity"
         >
           −
         </button>
-        <div className="w-10 text-center">{quantity}</div>
+        <div className="w-8 text-center">{quantity}</div>
         <button
           onClick={inc}
           disabled={pending || atMaxStock}
-          className="h-9 w-9 rounded-lg border disabled:opacity-60 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="w-8 h-8 flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-60 transition-opacity"
           aria-label="Increase quantity"
         >
           +
@@ -68,7 +68,7 @@ export default function CartItemRow({
         <button
           onClick={remove}
           disabled={pending}
-          className="ml-2 rounded-lg border px-3 py-2 text-sm disabled:opacity-60"
+          className="ml-2 text-sm text-neutral-500 hover:text-black transition-colors disabled:opacity-40"
         >
           Remove
         </button>

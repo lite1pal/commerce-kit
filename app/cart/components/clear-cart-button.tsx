@@ -10,7 +10,7 @@ export default function ClearCartButton() {
     <button
       onClick={() => startTransition(clearCart)}
       disabled={pending}
-      className="rounded-lg border px-3 py-2 text-sm disabled:opacity-60"
+      className="text-sm text-neutral-500 hover:text-black transition-colors disabled:opacity-40"
     >
       {pending ? "Clearing..." : "Clear cart"}
     </button>
