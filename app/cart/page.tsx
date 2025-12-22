@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import CartItemRow from "./components/cart-item-row";
 import ClearCartButton from "./components/clear-cart-button";
+import Link from "next/link";
 
 export default async function CartPage() {
   const jar = await cookies();
@@ -69,12 +70,12 @@ export default async function CartPage() {
         <div className="text-lg">€{(totalCents / 100).toFixed(2)}</div>
       </div>
 
-      <a
+      <Link
         href="/checkout"
         className="block w-full bg-black px-4 py-3 text-center text-white text-sm hover:opacity-80 transition-opacity"
       >
         Continue to checkout
-      </a>
+      </Link>
     </main>
   );
 }

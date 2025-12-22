@@ -1,5 +1,6 @@
 import { formatCentsToDollars } from "@/lib/price";
 import { getOrders, deleteOrder } from "./actions";
+import Link from "next/link";
 
 export default async function OrdersPage() {
   const orders = await getOrders();
@@ -31,12 +32,12 @@ export default async function OrdersPage() {
                 {new Date(order.createdAt).toLocaleString()}
               </td>
               <td className="border px-4 py-2 space-x-2">
-                <a
+                <Link
                   href={`/admin/orders/${order.id}/edit`}
                   className="text-blue-600 hover:underline"
                 >
                   Edit
-                </a>
+                </Link>
                 {/* Delete button example, you may want to use a form for server action */}
                 <form
                   action={async () => {

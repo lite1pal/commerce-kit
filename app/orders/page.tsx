@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import OrderEmailForm from "./order-email-form";
+import Link from "next/link";
 
 export default async function OrdersPage({
   searchParams,
@@ -29,7 +30,7 @@ export default async function OrdersPage({
       {orders.length > 0 && (
         <div className="rounded-2xl border p-4 space-y-2">
           {orders.map((o) => (
-            <a
+            <Link
               key={o.id}
               href={`/thank-you?order=${o.id}`}
               className="flex justify-between gap-4 rounded-xl border px-3 py-2 hover:bg-slate-50"
@@ -46,7 +47,7 @@ export default async function OrdersPage({
                 </div>
                 <div className="text-xs text-slate-600">{o.status}</div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}
