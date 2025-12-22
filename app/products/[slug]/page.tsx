@@ -1,15 +1,17 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import AddToCartForm from "../components/add-to-cart-form";
 import { ProductReviews } from "../components/product-reviews";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ variant: string }>;
 }): Promise<Metadata> {
   const slug = (await params).slug;
+  const variant = (await searchParams).variant;
 
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -32,13 +34,17 @@ export async function generateMetadata({
 
 import { getCurrentUser } from "@/app/auth/actions";
 import { ProductAttributes } from "./product-attributes";
+import VariantSelector from "./variant-selector";
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ variant: string }>;
 }) {
   const { slug } = await params;
+  const variant = (await searchParams).variant;
 
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -47,55 +53,90 @@ export default async function ProductPage({
   const user = await getCurrentUser();
 
   if (!product || !product.active) return notFound();
-  return (
-    <main className="mx-auto max-w-3xl p-6 space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">{product.name}</h1>
-        {product.description ? (
-          <p className="text-slate-700">{product.description}</p>
-        ) : null}
-      </div>
 
-      {product.images.length ? (
-        <div className="grid grid-cols-2 gap-4">
-          {product.images.map((img) => (
+  const selectedVariant =
+    product.variants.find((v) => v.id === variant) || product.variants[0];
+
+  return (
+    <main className="mx-auto max-w-6xl p-8">
+      <div className="flex flex-col md:flex-row gap-12">
+        {/* Left: Product Image */}
+        <div className="flex-1 flex items-center justify-center bg-neutral-100 rounded-xl p-6 min-h-125">
+          {product.images[0] ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              key={img.id}
-              src={img.url}
-              alt={img.alt ?? product.name}
-              className="w-full"
+              src={product.images[0].url}
+              alt={product.images[0].alt ?? product.name}
+              className="max-h-105 w-auto object-contain mx-auto"
             />
-          ))}
-        </div>
-      ) : null}
-
-      <ProductAttributes productId={product.id} />
-
-      {product.variants.length ? (
-        <section className="space-y-4">
-          {product.variants.map((v) => (
-            <div key={v.id} className="py-4 border-t space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div>{v.name}</div>
-                  <div className="text-neutral-500 dark:text-neutral-200">
-                    €{(v.priceCents / 100).toFixed(2)}
-                  </div>
-                </div>
-                <div className="text-sm text-neutral-400">{v.stock} left</div>
-              </div>
-
-              <AddToCartForm variantId={v.id} stock={v.stock} />
+          ) : (
+            <div className="w-full h-105 bg-neutral-200 flex items-center justify-center rounded">
+              No image
             </div>
-          ))}
-        </section>
-      ) : (
-        <p className="text-slate-600">No variants available.</p>
-      )}
+          )}
+        </div>
 
+        {/* Right: Product Info */}
+        <div className="flex-1 flex flex-col gap-6 max-w-xl mx-auto">
+          <div>
+            <h1 className="text-4xl font-bold mb-2 font-sans">
+              {product.name}
+            </h1>
+            {/* Variant selector */}
+            <VariantSelector
+              product={product}
+              selectedVariant={selectedVariant}
+            />
+            <div className="text-sm text-neutral-500 mb-4">
+              Free shipping when you spend $90.00+ for everyone. Promotion
+              auto-applied on checkout.
+            </div>
+            {product.description && (
+              <p className="mb-4 whitespace-pre-line">{product.description}</p>
+            )}
+            <div className="mb-4">
+              <span className="font-mono text-base">
+                High Quality Cuffed Beanie
+              </span>
+            </div>
+          </div>
+
+          {/* Product attributes */}
+          <ProductAttributes productId={product.id} />
+
+          {/* Collapsible sections (static for now) */}
+          <div className="divide-y border-t border-b mt-6">
+            <details className="py-4 group" open>
+              <summary className="font-semibold cursor-pointer flex justify-between items-center">
+                More details <span className="ml-2">+</span>
+              </summary>
+              <div className="mt-2 text-sm text-neutral-700 font-mono">
+                High Quality Cuffed Beanie
+              </div>
+            </details>
+            <details className="py-4 group">
+              <summary className="font-semibold cursor-pointer flex justify-between items-center">
+                Size &amp; Fit <span className="ml-2">-</span>
+              </summary>
+              <div className="mt-2 text-sm text-neutral-700 font-mono">
+                • Circumference: 17 ¾" - 18 ½"
+              </div>
+            </details>
+            <details className="py-4 group">
+              <summary className="font-semibold cursor-pointer flex justify-between items-center">
+                Quality Guarantee &amp; Returns <span className="ml-2">+</span>
+              </summary>
+              <div className="mt-2 text-sm text-neutral-700 font-mono">
+                30-day return policy. Satisfaction guaranteed.
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
       {/* Product reviews section */}
-      <ProductReviews productId={product.id} userId={user?.id} />
+      <div className="mt-12">
+        <ProductReviews productId={product.id} userId={user?.id} />
+      </div>
     </main>
   );
 }
