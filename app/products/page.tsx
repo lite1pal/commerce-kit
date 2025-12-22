@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Search from "../components/Search";
+import { formatCentsToDollars } from "@/lib/price";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -73,7 +74,7 @@ export default async function ProductsPage({
                 <div>
                   <div className="font-medium">{p.name}</div>
                   <div className="mt-1 text-sm text-neutral-600">
-                    From €{(price / 100).toFixed(2)}
+                    From €{formatCentsToDollars(price)}
                   </div>
                 </div>
               </div>

@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { formatCentsToDollars } from "@/lib/price";
 
 export async function generateMetadata({
   params,
@@ -94,7 +95,7 @@ export default async function CollectionPage({
                 <div>
                   <div className="mb-1">{p.name}</div>
                   <div className="text-sm text-neutral-500  dark:text-neutral-200">
-                    €{(price / 100).toFixed(2)}
+                    €{formatCentsToDollars(price)}
                   </div>
                   {outOfStock && (
                     <div className="text-xs text-neutral-400 mt-1">

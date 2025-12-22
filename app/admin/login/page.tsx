@@ -6,8 +6,10 @@ import { getCurrentUser } from "@/app/auth/actions";
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }) {
+  const error = (await searchParams).error;
+
   const user = await getCurrentUser();
 
   const isAdmin = user && user.role === "ADMIN";
@@ -17,9 +19,7 @@ export default async function AdminLoginPage({
   return (
     <div className="mx-auto max-w-md px-6 py-14">
       <h1 className="text-2xl font-semibold">Admin login</h1>
-      {searchParams.error ? (
-        <p className="mt-2 text-sm text-red-600">Wrong token.</p>
-      ) : null}
+      {error ? <p className="mt-2 text-sm text-red-600">Wrong token.</p> : null}
 
       <form action={adminLogin} className="mt-6 space-y-3">
         <input
