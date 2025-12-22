@@ -17,6 +17,8 @@ export default async function EditOrderPage({
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-4">Edit Order #{order.id}</h1>
       <form className="space-y-4" action={updateOrder.bind(null, order.id)}>
+        <input type="hidden" name="intent" value="update-order-status" />
+
         <div>
           <label className="block font-medium">Status</label>
           <select
