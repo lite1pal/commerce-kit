@@ -9,6 +9,4 @@ export async function requireAdmin() {
   if (!currentUser || currentUser.role !== UserRole.ADMIN) {
     throw new Error("Unauthorized");
   }
-
-  return currentUser;
 }
