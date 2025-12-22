@@ -1,3 +1,4 @@
+import { OrderStatus } from "@/app/generated/prisma/enums";
 import { getOrderById, updateOrder } from "../../actions";
 
 export default async function EditOrderPage({
@@ -15,13 +16,7 @@ export default async function EditOrderPage({
   return (
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-4">Edit Order #{order.id}</h1>
-      <form
-        className="space-y-4"
-        action={async (formData: FormData) => {
-          "use server";
-          await updateOrder(order.id, formData);
-        }}
-      >
+      <form className="space-y-4" action={updateOrder.bind(null, order.id)}>
         <div>
           <label className="block font-medium">Status</label>
           <select
@@ -29,13 +24,13 @@ export default async function EditOrderPage({
             className="border px-2 py-1"
             defaultValue={order.status}
           >
-            <option value="PENDING">Pending</option>
-            <option value="PAID">Paid</option>
-            <option value="CANCELED">Cancelled</option>
-            <option value="REFUNDED">Refunded</option>
+            {Object.values(OrderStatus).map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
           </select>
         </div>
-        {/* Add more fields as needed */}
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded"
