@@ -19,8 +19,36 @@ async function main() {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.productImage.deleteMany();
+  await prisma.variantAttributeValue.deleteMany();
+  await prisma.attributeValue.deleteMany();
+  await prisma.attribute.deleteMany();
   await prisma.variant.deleteMany();
   await prisma.product.deleteMany();
+
+  // Create attributes
+  const colorAttr = await prisma.attribute.create({
+    data: { name: "Color" },
+  });
+  const sizeAttr = await prisma.attribute.create({
+    data: { name: "Size" },
+  });
+
+  // Create attribute values
+  const red = await prisma.attributeValue.create({
+    data: { value: "Red", attributeId: colorAttr.id },
+  });
+  const blue = await prisma.attributeValue.create({
+    data: { value: "Blue", attributeId: colorAttr.id },
+  });
+  const small = await prisma.attributeValue.create({
+    data: { value: "Small", attributeId: sizeAttr.id },
+  });
+  const medium = await prisma.attributeValue.create({
+    data: { value: "Medium", attributeId: sizeAttr.id },
+  });
+  const large = await prisma.attributeValue.create({
+    data: { value: "Large", attributeId: sizeAttr.id },
+  });
 
   const apparel = await prisma.collection.create({
     data: {
@@ -60,6 +88,20 @@ async function main() {
         ],
       },
     },
+    include: { variants: true },
+  });
+
+  // Assign attribute values to variants
+  await prisma.variantAttributeValue.createMany({
+    data: [
+      { variantId: product.variants[0].id, attributeValueId: small.id }, // Small
+      { variantId: product.variants[1].id, attributeValueId: medium.id }, // Medium
+      { variantId: product.variants[2].id, attributeValueId: large.id }, // Large
+      // Optionally assign colors
+      { variantId: product.variants[0].id, attributeValueId: red.id },
+      { variantId: product.variants[1].id, attributeValueId: blue.id },
+      { variantId: product.variants[2].id, attributeValueId: red.id },
+    ],
   });
 
   const product2 = await prisma.product.create({
