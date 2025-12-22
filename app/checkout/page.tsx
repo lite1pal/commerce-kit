@@ -3,6 +3,7 @@ import { createOrder } from "@/app/actions/checkout";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { getCurrentUser } from "../auth/actions";
+import CheckoutForm from "./checkout-form";
 
 export default async function CheckoutPage() {
   const jar = await cookies();
@@ -59,26 +60,7 @@ export default async function CheckoutPage() {
             </div>
           </div>
 
-          <form action={createOrder} className="border-t pt-4 space-y-4">
-            <label className="block">
-              <div className="text-sm mb-2">Email</div>
-              <input
-                name="email"
-                type="email"
-                defaultValue={userEmail ?? ""}
-                required
-                className="w-full border px-3 py-2 text-sm"
-                placeholder="you@company.com"
-              />
-            </label>
-
-            <Button type="submit" fullWidth>
-              Place order
-            </Button>
-            <p className="text-xs text-neutral-400">
-              No payment yet — this just creates the order.
-            </p>
-          </form>
+          <CheckoutForm userEmail={userEmail} />
         </>
       )}
     </main>

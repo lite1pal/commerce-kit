@@ -8,3 +8,7 @@ export const UpdateOrderSchema = z.object({
 });
 
 export type UpdateOrderInput = z.infer<typeof UpdateOrderSchema>;
+
+export const CreateOrderSchema = z.object({
+  email: z.email(),
+});

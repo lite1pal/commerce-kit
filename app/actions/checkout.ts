@@ -1,19 +1,27 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { CreateOrderSchema } from "@/lib/schemas/order";
+import { ErrorType } from "@/lib/types/error";
+import { formDataToObject } from "@/lib/utils/formData";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function createOrder(formData: FormData) {
-  const emailRaw = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-  if (!emailRaw || !emailRaw.includes("@"))
-    throw new Error("Enter a valid email");
+export async function createOrder(
+  _: any,
+  formData: FormData
+): Promise<void | { message: string }> {
+  const parsed = CreateOrderSchema.safeParse(formDataToObject(formData));
+
+  if (!parsed.success) {
+    return { message: "Invalid form data" };
+  }
+
+  const email = parsed.data.email;
 
   const jar = await cookies();
   const cartId = jar.get("cartId")?.value;
-  if (!cartId) throw new Error("Cart is empty");
+  if (!cartId) return { message: "Cart is empty" };
 
   const cart = await prisma.cart.findUnique({
     where: { id: cartId },
@@ -26,7 +34,7 @@ export async function createOrder(formData: FormData) {
     },
   });
 
-  if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
+  if (!cart || cart.items.length === 0) return { message: "Cart is empty" };
 
   const totalCents = cart.items.reduce(
     (sum, item) => sum + item.quantity * item.variant.priceCents,
@@ -50,7 +58,7 @@ export async function createOrder(formData: FormData) {
 
     const created = await tx.order.create({
       data: {
-        email: emailRaw,
+        email,
         totalCents,
         status: "PENDING",
         items: {
@@ -70,6 +78,5 @@ export async function createOrder(formData: FormData) {
 
     return created;
   });
-
   redirect(`/thank-you?order=${order.id}`);
 }
