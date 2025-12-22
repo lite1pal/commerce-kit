@@ -23,6 +23,30 @@ type BlockEditorProps = {
 export default function BlockEditor({ value }: BlockEditorProps) {
   const [blocks, setBlocks] = useState<PageBlock[]>(value ?? []);
 
+  function moveBlockUp(idx: number) {
+    if (idx <= 0) return;
+    setBlocks((prev) => {
+      const newBlocks = [...prev];
+      [newBlocks[idx - 1], newBlocks[idx]] = [
+        newBlocks[idx],
+        newBlocks[idx - 1],
+      ];
+      return newBlocks;
+    });
+  }
+
+  function moveBlockDown(idx: number) {
+    if (idx >= blocks.length - 1) return;
+    setBlocks((prev) => {
+      const newBlocks = [...prev];
+      [newBlocks[idx], newBlocks[idx + 1]] = [
+        newBlocks[idx + 1],
+        newBlocks[idx],
+      ];
+      return newBlocks;
+    });
+  }
+
   function addBlock(type: PageBlock["type"]) {
     let newBlock: PageBlock;
     if (type === "heading") {
@@ -67,13 +91,37 @@ export default function BlockEditor({ value }: BlockEditorProps) {
         <div key={idx} className="border p-2 mb-2">
           <div className="flex justify-between items-center mb-1">
             <span className="font-bold">{block.type}</span>
-            <button
-              type="button"
-              onClick={() => removeBlock(idx)}
-              className="text-red-600"
-            >
-              Remove
-            </button>
+            <div className="flex gap-2">
+              <div className="flex gap-2 mr-10">
+                <button
+                  type="button"
+                  onClick={() => moveBlockUp(idx)}
+                  disabled={idx === 0}
+                  title="Move up"
+                  className="text-gray-500 disabled:opacity-40"
+                  style={{ fontSize: "1.1em" }}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveBlockDown(idx)}
+                  disabled={idx === blocks.length - 1}
+                  title="Move down"
+                  className="text-gray-500 disabled:opacity-40"
+                  style={{ fontSize: "1.1em" }}
+                >
+                  ↓
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeBlock(idx)}
+                className="text-red-600"
+              >
+                Remove
+              </button>
+            </div>
           </div>
           {block.type === "heading" && (
             <input

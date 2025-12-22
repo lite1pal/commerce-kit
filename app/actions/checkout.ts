@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { CreateOrderSchema } from "@/lib/schemas/order";
-import { ErrorType } from "@/lib/types/error";
 import { formDataToObject } from "@/lib/utils/formData";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
