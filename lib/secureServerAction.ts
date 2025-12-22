@@ -1,4 +1,4 @@
-export function secureAction<TArgs extends any[], TResult>(options: {
+export function secureAction<TArgs extends unknown[], TResult>(options: {
   requireAuth?: () => Promise<void>;
   validate?: (...args: TArgs) => void;
   action: (...args: TArgs) => Promise<TResult>;

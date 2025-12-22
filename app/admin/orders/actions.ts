@@ -4,43 +4,60 @@ import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { assertValidOrderStatusTransition } from "@/lib/domain/order-status";
 import prisma from "@/lib/prisma";
 import { UpdateOrderSchema } from "@/lib/schemas/order";
-import { secureAction } from "@/lib/secureServerAction";
 import { formDataToObject } from "@/lib/utils/formData";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export const updateOrder = secureAction({
-  requireAuth: requireAdmin,
-  validate: (_, formData: FormData) => {
-    const parsed = UpdateOrderSchema.safeParse(formDataToObject(formData));
-    if (!parsed.success) throw new Error("Invalid form data");
-    return parsed.data;
-  },
-  action: async (orderId: string, formData: FormData) => {
-    const parsedData = UpdateOrderSchema.parse(formDataToObject(formData));
+export async function updateOrder(
+  _: any,
+  formData: FormData
+): Promise<void | { message: string }> {
+  // 1️⃣ Auth
+  await requireAdmin();
 
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) throw new Error("Order not found");
+  // 2️⃣ Validate + parse input
+  const parsed = UpdateOrderSchema.safeParse(formDataToObject(formData));
 
-    assertValidOrderStatusTransition(order.status, parsedData.status);
+  if (!parsed.success) {
+    return { message: "Invalid form data" };
+  }
 
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { status: parsedData.status },
-    });
+  const orderId = parsed.data.orderId;
+  const newStatus = parsed.data.status;
 
-    revalidatePath("/admin/orders");
-    revalidatePath(`/admin/orders/${orderId}/edit`);
-    redirect("/admin/orders");
-  },
-});
+  // 3️⃣ Load current order
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  });
+
+  if (!order) {
+    return { message: "Order not found" };
+  }
+
+  // 4️⃣ Enforce valid state transition
+  const err = assertValidOrderStatusTransition(order.status, newStatus);
+
+  if (err) return { message: err.message };
+
+  // 5️⃣ Persist
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: newStatus },
+  });
+
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${orderId}/edit`);
+  redirect("/admin/orders");
+}
 
 export async function deleteOrder(orderId: string) {
+  await requireAdmin();
   await prisma.order.delete({ where: { id: orderId } });
   revalidatePath("/admin/orders");
 }
 
 export async function getOrders() {
+  await requireAdmin();
   return prisma.order.findMany({
     include: { user: true },
     orderBy: { createdAt: "desc" },
@@ -48,8 +65,9 @@ export async function getOrders() {
 }
 
 export async function getOrderById(orderId: string) {
+  await requireAdmin();
+
   return prisma.order.findUnique({
     where: { id: orderId },
-    include: { user: true },
   });
 }

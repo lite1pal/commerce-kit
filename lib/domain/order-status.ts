@@ -1,4 +1,5 @@
 import { OrderStatus } from "@/app/generated/prisma/enums";
+import { ErrorType } from "../types/error";
 
 const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
   PENDING: ["PAID", "CANCELED"],
@@ -10,10 +11,12 @@ const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
 export function assertValidOrderStatusTransition(
   from: OrderStatus,
   to: OrderStatus
-) {
-  if (from === to) return;
+): ErrorType {
+  if (from === to) return { message: "You can't submit the same status" };
 
   if (!allowedTransitions[from].includes(to)) {
-    throw new Error(`Invalid order status transition: ${from} → ${to}`);
+    return { message: `Invalid order status transition: ${from} → ${to}` };
   }
+
+  return null;
 }

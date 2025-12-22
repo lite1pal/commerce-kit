@@ -1,17 +1,9 @@
 "use server";
 
+import { slugify } from "@/lib/domain/product-slug";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
-function slugify(input: string) {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/['"]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-}
 
 export async function createProduct(formData: FormData) {
   const name = String(formData.get("name") || "").trim();

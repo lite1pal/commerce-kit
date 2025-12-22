@@ -2,7 +2,8 @@ import { z } from "zod";
 import { OrderStatus } from "@/app/generated/prisma/enums";
 
 export const UpdateOrderSchema = z.object({
-  status: z.nativeEnum(OrderStatus),
+  orderId: z.string(),
+  status: z.enum(OrderStatus),
   intent: z.literal("update-order-status"),
 });
 
