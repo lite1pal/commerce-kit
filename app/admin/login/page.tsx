@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { adminLogin } from "./actions";
 import { getCurrentUser } from "@/app/auth/actions";
