@@ -1,47 +1,74 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import Search from "../components/Search";
+import Search from "../../components/Search";
 import { formatCentsToDollars } from "@/lib/price";
-import { buildFilterUrl } from "@/lib/domain/products-filters";
+import { buildFilterUrl, parseFilters } from "@/lib/domain/products-filters";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Products",
   description: "Browse all products in the CommerceKit storefront.",
-
-  alternates: {
-    canonical: `${process.env.APP_URL}/products`,
-  },
 };
 
 export default async function ProductsPage({
-  searchParams,
+  params,
 }: {
-  searchParams?: Promise<{ q?: string }>;
+  params: Promise<{ filters?: string[] }>;
 }) {
-  const query = (await searchParams)?.q?.trim();
-  if (query === "") redirect("/products");
+  const filtersParam = (await params).filters ?? [];
 
-  // Split query into words and search for products containing all words
-  const words = query ? query.split(/\s+/).filter(Boolean) : [];
+  const filterMap = parseFilters(filtersParam);
+
+  const variantFilters =
+    Object.keys(filterMap).length > 0
+      ? {
+          variants: {
+            some: {
+              variantAttributeValues: {
+                some: {
+                  attributeValue: {
+                    value: { in: Object.values(filterMap).flat() },
+                    attribute: {
+                      name: {
+                        in: Object.keys(filterMap).map(
+                          (k) => k.charAt(0).toUpperCase() + k.slice(1)
+                        ),
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }
+      : {};
 
   const attributes = await prisma.attribute.findMany({
     include: { values: true },
     orderBy: { name: "asc" },
   });
 
+  console.log(filterMap, Object.values(filterMap).flat());
+
   const products = await prisma.product.findMany({
     where: {
       active: true,
-      ...(words.length > 0 && {
-        AND: words.map((word) => ({
-          name: {
-            contains: word,
-            mode: "insensitive",
+      // ...variantFilters,
+      variants: {
+        some: {
+          variantAttributeValues: {
+            some: {
+              attributeValue: {
+                value: { in: Object.values(filterMap).flat() },
+                attribute: {
+                  name: {
+                    in: Object.keys(filterMap).flat(),
+                  },
+                },
+              },
+            },
           },
-        })),
-      }),
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
     include: {
@@ -53,7 +80,7 @@ export default async function ProductsPage({
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-3xl font-semibold">Products</h1>
-      <Search query={query} />
+      <Search />
       <div className="flex gap-8 mt-8">
         <aside className="w-64 shrink-0 hidden md:block">
           <div className="space-y-6">
@@ -63,11 +90,17 @@ export default async function ProductsPage({
                 <div className="flex flex-wrap gap-4">
                   {attr.values.map((val) => {
                     const key = attr.name.toLowerCase();
-                    const selected = false;
+                    const selected =
+                      filterMap[key]?.includes(val.value) ?? false;
                     return (
                       <Link
                         key={val.id}
-                        href={buildFilterUrl(key, [], val.value, selected)}
+                        href={buildFilterUrl(
+                          key,
+                          filtersParam,
+                          val.value,
+                          selected
+                        )}
                         className={`flex items-center gap-1 text-sm ${
                           selected ? "font-bold underline" : ""
                         }`}
@@ -84,12 +117,9 @@ export default async function ProductsPage({
           </div>
         </aside>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {" "}
-          {/* Filters sidebar */}
           {products.map((p) => {
             const img = p.images[0]?.url;
             const price = p.variants[0]?.priceCents ?? 0;
-
             return (
               <Link
                 key={p.id}
@@ -106,7 +136,6 @@ export default async function ProductsPage({
                     />
                   ) : null}
                 </div>
-
                 <div className="mt-4 flex items-start justify-between gap-3">
                   <div>
                     <div className="font-medium">{p.name}</div>

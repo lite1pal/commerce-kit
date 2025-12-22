@@ -27,27 +27,27 @@ async function main() {
 
   // Create attributes
   const colorAttr = await prisma.attribute.create({
-    data: { name: "Color" },
+    data: { name: "color" },
   });
   const sizeAttr = await prisma.attribute.create({
-    data: { name: "Size" },
+    data: { name: "size" },
   });
 
   // Create attribute values
   const red = await prisma.attributeValue.create({
-    data: { value: "Red", attributeId: colorAttr.id },
+    data: { value: "red", attributeId: colorAttr.id },
   });
   const blue = await prisma.attributeValue.create({
-    data: { value: "Blue", attributeId: colorAttr.id },
+    data: { value: "blue", attributeId: colorAttr.id },
   });
   const small = await prisma.attributeValue.create({
-    data: { value: "Small", attributeId: sizeAttr.id },
+    data: { value: "small", attributeId: sizeAttr.id },
   });
   const medium = await prisma.attributeValue.create({
-    data: { value: "Medium", attributeId: sizeAttr.id },
+    data: { value: "medium", attributeId: sizeAttr.id },
   });
   const large = await prisma.attributeValue.create({
-    data: { value: "Large", attributeId: sizeAttr.id },
+    data: { value: "large", attributeId: sizeAttr.id },
   });
 
   const apparel = await prisma.collection.create({
@@ -82,9 +82,9 @@ async function main() {
       },
       variants: {
         create: [
-          { name: "Small", priceCents: 1990, sku: "TEE-S", stock: 10 },
-          { name: "Medium", priceCents: 1990, sku: "TEE-M", stock: 15 },
-          { name: "Large", priceCents: 1990, sku: "TEE-L", stock: 7 },
+          { name: "small", priceCents: 1990, sku: "tee-s", stock: 10 },
+          { name: "medium", priceCents: 1990, sku: "tee-m", stock: 15 },
+          { name: "large", priceCents: 1990, sku: "tee-l", stock: 7 },
         ],
       },
     },
@@ -115,7 +115,7 @@ async function main() {
       },
       variants: {
         create: [
-          { name: "Default", priceCents: 1290, sku: "MUG-1", stock: 25 },
+          { name: "default", priceCents: 1290, sku: "mug-1", stock: 25 },
         ],
       },
     },
