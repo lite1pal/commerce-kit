@@ -1,14 +1,17 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { adminLogin } from "./actions";
+import { getCurrentUser } from "@/app/auth/actions";
 
 export default async function AdminLoginPage({
   searchParams,
 }: {
   searchParams: { error?: string };
 }) {
-  const jar = await cookies();
-  const isAdmin = jar.get("admin")?.value === "1";
+  const user = await getCurrentUser();
+
+  const isAdmin = user && user.role === "ADMIN";
+
   if (isAdmin) redirect("/admin/products");
 
   return (

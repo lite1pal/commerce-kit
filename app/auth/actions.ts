@@ -94,6 +94,6 @@ export async function getCurrentUser() {
   if (!userId) return null;
   return prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true },
+    select: { id: true, email: true, role: true },
   });
 }
