@@ -31,6 +31,7 @@ export async function generateMetadata({
 }
 
 import { getCurrentUser } from "@/app/auth/actions";
+import { ProductAttributes } from "./product-attributes";
 
 export default async function ProductPage({
   params,
@@ -68,6 +69,8 @@ export default async function ProductPage({
           ))}
         </div>
       ) : null}
+
+      <ProductAttributes productId={product.id} />
 
       {product.variants.length ? (
         <section className="space-y-4">

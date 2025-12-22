@@ -1,7 +1,7 @@
 "use server";
 
-import { slugify } from "@/lib/domain/product-slug";
 import prisma from "@/lib/prisma";
+import { slugify } from "@/lib/utils/string";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

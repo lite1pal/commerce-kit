@@ -3,6 +3,7 @@ import Link from "next/link";
 import Search from "../../components/Search";
 import { formatCentsToDollars } from "@/lib/price";
 import { buildFilterUrl, parseFilters } from "@/lib/domain/products-filters";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Products",
@@ -15,6 +16,8 @@ export default async function ProductsPage({
   params: Promise<{ filters?: string[] }>;
 }) {
   const filtersParam = (await params).filters ?? [];
+
+  if (filtersParam.length === 0) redirect("/products");
 
   const filterMap = parseFilters(filtersParam);
 
@@ -29,9 +32,7 @@ export default async function ProductsPage({
                     value: { in: Object.values(filterMap).flat() },
                     attribute: {
                       name: {
-                        in: Object.keys(filterMap).map(
-                          (k) => k.charAt(0).toUpperCase() + k.slice(1)
-                        ),
+                        in: Object.keys(filterMap).flat(),
                       },
                     },
                   },
@@ -47,28 +48,10 @@ export default async function ProductsPage({
     orderBy: { name: "asc" },
   });
 
-  console.log(filterMap, Object.values(filterMap).flat());
-
   const products = await prisma.product.findMany({
     where: {
       active: true,
-      // ...variantFilters,
-      variants: {
-        some: {
-          variantAttributeValues: {
-            some: {
-              attributeValue: {
-                value: { in: Object.values(filterMap).flat() },
-                attribute: {
-                  name: {
-                    in: Object.keys(filterMap).flat(),
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      ...variantFilters,
     },
     orderBy: { createdAt: "desc" },
     include: {
