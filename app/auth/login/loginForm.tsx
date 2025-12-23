@@ -1,36 +1,37 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useEffect } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import Button from "@/app/components/Button";
-import { login } from "../actions";
-import { validateEmail, validatePassword } from "../validate";
+import { initialAuthState, login } from "../actions";
 import { useRouter } from "next/navigation";
 
-export default function LoginForm() {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" fullWidth disabled={pending}>
+      {pending ? "Logging in..." : "Login"}
+    </Button>
+  );
+}
 
-  async function onSubmit(formData: FormData) {
-    setError(null);
-    const email = String(formData.get("email") ?? "").trim();
-    const password = String(formData.get("password") ?? "");
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
+export default function LoginForm() {
+  const router = useRouter();
+  const [state, formAction] = useFormState(login, initialAuthState);
+
+  useEffect(() => {
+    if (state.ok) {
+      router.replace("/collections");
     }
-    if (!validatePassword(password)) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-    startTransition(async () => {
-      const res = await login(formData);
-      if (res?.error) setError(res.error);
-      else router.replace("/collections");
-    });
-  }
+  }, [router, state]);
 
   return (
-    <form action={onSubmit} className="space-y-4">
+    <form action={formAction} className="space-y-4">
+      {!state.ok &&
+        state.formErrors?.map((message: string) => (
+          <div key={message} className="text-sm text-red-600">
+            {message}
+          </div>
+        ))}
       <label className="block">
         <div className="mb-1 text-sm">Email</div>
         <input
@@ -39,6 +40,12 @@ export default function LoginForm() {
           required
           className="w-full border px-3 py-2 text-sm"
         />
+        {!state.ok &&
+          state.fieldErrors?.email?.map((message: string) => (
+            <p key={message} className="text-xs text-red-600">
+              {message}
+            </p>
+          ))}
       </label>
       <label className="block">
         <div className="mb-1 text-sm">Password</div>
@@ -49,11 +56,14 @@ export default function LoginForm() {
           minLength={8}
           className="w-full border px-3 py-2 text-sm"
         />
+        {!state.ok &&
+          state.fieldErrors?.password?.map((message: string) => (
+            <p key={message} className="text-xs text-red-600">
+              {message}
+            </p>
+          ))}
       </label>
-      {error && <div className="text-sm text-red-600">{error}</div>}
-      <Button type="submit" fullWidth disabled={pending}>
-        {pending ? "Logging in..." : "Login"}
-      </Button>
+      <SubmitButton />
     </form>
   );
 }
