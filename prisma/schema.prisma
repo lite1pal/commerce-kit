@@ -90,6 +90,8 @@ model Attribute {
   updatedAt DateTime @updatedAt
 
   values AttributeValue[]
+
+  @@index([name])
 }
 
 model AttributeValue {
@@ -101,7 +103,9 @@ model AttributeValue {
   attribute              Attribute               @relation(fields: [attributeId], references: [id], onDelete: Cascade)
   variantAttributeValues VariantAttributeValue[]
 
+  @@unique([attributeId, value])
   @@index([attributeId])
+  @@index([value])
 }
 
 model VariantAttributeValue {
@@ -113,6 +117,7 @@ model VariantAttributeValue {
 
   @@id([variantId, attributeValueId])
   @@index([attributeValueId])
+  @@index([variantId])
 }
 
 model Cart {
