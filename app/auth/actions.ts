@@ -53,6 +53,7 @@ export async function login(formData: FormData) {
   // Rate limit by email
   const rateKey = `login:${email}`;
   const limit = await rateLimit({ key: rateKey, window: 60, max: 10 });
+
   if (!limit.allowed) {
     return { error: `Too many login attempts. Try again in ${limit.reset}s.` };
   }
