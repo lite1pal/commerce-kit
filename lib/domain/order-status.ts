@@ -1,4 +1,4 @@
-import { OrderStatus } from "@/app/generated/prisma/enums";
+import { OrderStatus } from "@/generated/prisma/enums";
 import { ErrorType } from "../types/error";
 
 const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {

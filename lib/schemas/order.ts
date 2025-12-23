@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { OrderStatus } from "@/app/generated/prisma/enums";
+import { OrderStatus } from "@/generated/prisma/enums";
+
+export const FindOrdersSchema = z.object({
+  email: z.email(),
+});
 
 export const UpdateOrderSchema = z.object({
   orderId: z.string(),

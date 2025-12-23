@@ -1,7 +1,7 @@
 "server only";
 
-import { getCurrentUser } from "@/app/auth/actions";
-import { UserRole } from "@/app/generated/prisma/enums";
+import { getCurrentUser } from "@/app/(storefront)/auth/actions";
+import { UserRole } from "@/generated/prisma/enums";
 
 export async function requireAdmin() {
   const currentUser = await getCurrentUser();
