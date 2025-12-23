@@ -7,6 +7,10 @@ import type {
   ImageBlock,
   ButtonBlock,
 } from "../../../p/[...slug]/page-renderer";
+import dynamic from "next/dynamic";
+const CatalogFilterSelector = dynamic(() => import("./CatalogFilterSelector"), {
+  ssr: false,
+});
 import { useState } from "react";
 
 const BLOCK_TYPES: { type: PageBlock["type"]; label: string }[] = [
@@ -14,11 +18,46 @@ const BLOCK_TYPES: { type: PageBlock["type"]; label: string }[] = [
   { type: "paragraph", label: "Paragraph" },
   { type: "image", label: "Image" },
   { type: "button", label: "Button" },
+  { type: "catalog", label: "Catalog" },
 ];
 
 type BlockEditorProps = {
   value?: PageBlock[];
 };
+
+import { useEffect } from "react";
+import type { CatalogProduct } from "@/app/components/CatalogGrid";
+
+function CatalogFilterBlockEditor({
+  filters,
+  onChange,
+}: {
+  filters: any;
+  onChange: (filters: any) => void;
+}) {
+  const [previewProducts, setPreviewProducts] = useState<CatalogProduct[]>([]);
+
+  useEffect(() => {
+    async function fetchPreview() {
+      const res = await fetch("/api/catalog-block-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+      const data = await res.json();
+      setPreviewProducts(data.products);
+    }
+    fetchPreview();
+  }, [filters]);
+
+  return (
+    <CatalogFilterSelector
+      filters={filters}
+      onChange={onChange}
+      previewProducts={previewProducts}
+    />
+  );
+}
 
 export default function BlockEditor({ value }: BlockEditorProps) {
   const [blocks, setBlocks] = useState<PageBlock[]>(value ?? []);
@@ -55,6 +94,8 @@ export default function BlockEditor({ value }: BlockEditorProps) {
       newBlock = { type, props: { text: "Paragraph" } } as ParagraphBlock;
     } else if (type === "image") {
       newBlock = { type, props: { url: "", alt: "" } } as ImageBlock;
+    } else if (type === "catalog") {
+      newBlock = { type, props: { products: [] } } as any;
     } else {
       newBlock = { type, props: { text: "Button", url: "" } } as ButtonBlock;
     }
@@ -182,6 +223,14 @@ export default function BlockEditor({ value }: BlockEditorProps) {
                 placeholder="Button URL"
               />
             </>
+          )}
+          {block.type === "catalog" && (
+            <CatalogFilterBlockEditor
+              filters={block.props.filters || {}}
+              onChange={(filters: any) =>
+                updateBlock(idx, { ...block.props, filters })
+              }
+            />
           )}
         </div>
       ))}

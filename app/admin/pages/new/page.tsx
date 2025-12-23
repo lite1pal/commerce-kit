@@ -1,6 +1,6 @@
 import { createPage } from "../actions";
 import { redirect } from "next/navigation";
-import BlockEditor from "../components/block-editor";
+import BlockEditor from "../components/BlockEditor";
 
 export default function NewPageForm() {
   async function handleSubmit(formData: FormData) {

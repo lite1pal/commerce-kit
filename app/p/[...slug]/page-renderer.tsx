@@ -1,6 +1,8 @@
 "use client";
 
-// --- Block Types ---
+import { useEffect, useState } from "react";
+import CatalogGrid, { CatalogProduct } from "../../components/CatalogGrid";
+
 export type HeadingBlock = {
   type: "heading";
   props: { text: string };
@@ -17,84 +19,86 @@ export type ButtonBlock = {
   type: "button";
   props: { text: string; url: string };
 };
+export type CatalogBlock = {
+  type: "catalog";
+  props: {
+    filters: {
+      query?: string;
+      attributeFilters?: Record<string, string[]>;
+    };
+  };
+};
 export type PageBlock =
   | HeadingBlock
   | ParagraphBlock
   | ImageBlock
-  | ButtonBlock;
+  | ButtonBlock
+  | CatalogBlock;
 export type PageContent = PageBlock[];
 
 function renderBlock(block: PageBlock) {
   switch (block.type) {
     case "heading":
       return (
-        <h2
-          style={{
-            fontSize: "2rem",
-            fontWeight: 700,
-            margin: "1.5rem 0 1rem 0",
-            color: "#222",
-          }}
-        >
+        <h2 className="text-2xl font-bold mt-6 mb-4 text-neutral-900">
           {block.props.text}
         </h2>
       );
     case "paragraph":
       return (
-        <p
-          style={{
-            fontSize: "1.1rem",
-            lineHeight: 1.7,
-            margin: "0.75rem 0",
-            color: "#444",
-          }}
-        >
+        <p className="text-base leading-7 my-3 text-neutral-700">
           {block.props.text}
         </p>
       );
     case "image":
       return (
-        <div style={{ textAlign: "center", margin: "1.5rem 0" }}>
+        <div className="flex justify-center my-6">
           <img
             src={block.props.url}
             alt={block.props.alt}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-              borderRadius: "0.5rem",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            }}
+            className="max-w-full h-auto rounded-lg shadow-md"
           />
         </div>
       );
     case "button":
       return (
-        <div style={{ margin: "1.5rem 0" }}>
+        <div className="my-6">
           <a
             href={block.props.url}
-            className="btn"
-            style={{
-              display: "inline-block",
-              padding: "0.75rem 1.5rem",
-              background: "#0070f3",
-              color: "#fff",
-              borderRadius: "0.375rem",
-              textDecoration: "none",
-              fontWeight: 600,
-              fontSize: "1rem",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#0059c1")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#0070f3")}
+            className="btn inline-block px-6 py-3 bg-blue-600 text-white rounded-md no-underline font-semibold text-base shadow transition-colors duration-200 hover:bg-blue-800"
           >
             {block.props.text}
           </a>
         </div>
       );
+    case "catalog":
+      return <CatalogBlockRenderer filters={block.props.filters} />;
     default:
       return null;
   }
+}
+
+function CatalogBlockRenderer({ filters }: { filters: any }) {
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const res = await fetch("/api/catalog-block-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+      const data = await res.json();
+      setProducts(data.products);
+    }
+    fetchProducts();
+  }, [JSON.stringify(filters)]);
+
+  return (
+    <div className="my-8">
+      <CatalogGrid products={products} />
+    </div>
+  );
 }
 
 export default function PageRenderer({ content }: { content: PageContent }) {
