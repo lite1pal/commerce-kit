@@ -35,6 +35,7 @@ export async function generateMetadata({
 import { getCurrentUser } from "@/app/auth/actions";
 import { ProductAttributes } from "./product-attributes";
 import VariantSelector from "./variant-selector";
+import AddToCartForm from "../components/add-to-cart-form";
 
 export default async function ProductPage({
   params,
@@ -48,7 +49,16 @@ export default async function ProductPage({
 
   const product = await prisma.product.findUnique({
     where: { slug },
-    include: { images: true, variants: true },
+    include: {
+      images: true,
+      variants: {
+        include: {
+          variantAttributeValues: {
+            include: { attributeValue: { include: { attribute: true } } },
+          },
+        },
+      },
+    },
   });
   const user = await getCurrentUser();
 
@@ -100,6 +110,11 @@ export default async function ProductPage({
               </span>
             </div>
           </div>
+
+          <AddToCartForm
+            variantId={selectedVariant.id}
+            stock={selectedVariant.stock}
+          />
 
           {/* Product attributes */}
           <ProductAttributes productId={product.id} />

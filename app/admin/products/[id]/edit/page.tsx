@@ -2,6 +2,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export default async function EditProductPage({
   params,
@@ -12,8 +13,23 @@ export default async function EditProductPage({
 
   const product = await prisma.product.findUnique({
     where: { id },
-    include: { variants: { orderBy: { createdAt: "asc" } } },
+    include: {
+      variants: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          variantAttributeValues: {
+            include: { attributeValue: { include: { attribute: true } } },
+          },
+        },
+      },
+    },
   });
+
+  const attributes = await prisma.attribute.findMany({
+    include: { values: true },
+  });
+
+  console.log(attributes);
 
   if (!product) return <div className="p-6">Not found</div>;
 
@@ -40,6 +56,38 @@ export default async function EditProductPage({
         sku: skuRaw ? skuRaw : null,
       },
     });
+
+    revalidatePath(`/admin/products/${productId}/edit`);
+    redirect(`/admin/products/${productId}/edit`);
+  }
+
+  async function updateVariantAttributes(formData: FormData) {
+    "use server";
+    await requireAdmin();
+
+    const variantId = String(formData.get("variantId") || "");
+    const productId = String(formData.get("productId") || "");
+
+    if (!variantId) throw new Error("Missing variantId");
+    if (!productId) throw new Error("Missing productId");
+
+    // Collect all selected attribute value ids (multiple form inputs with same name)
+    const attributeValueIds = formData
+      .getAll("attributeValueIds")
+      .map(String)
+      .filter(Boolean);
+
+    // Remove existing links and create the new ones
+    await prisma.variantAttributeValue.deleteMany({ where: { variantId } });
+
+    if (attributeValueIds.length > 0) {
+      const createData = attributeValueIds.map((attributeValueId) => ({
+        variantId,
+        attributeValueId,
+      }));
+
+      await prisma.variantAttributeValue.createMany({ data: createData });
+    }
 
     revalidatePath(`/admin/products/${productId}/edit`);
     redirect(`/admin/products/${productId}/edit`);
@@ -253,6 +301,54 @@ export default async function EditProductPage({
                     </form>
                   </div>
                 </form>
+
+                {/* Attribute values assignment */}
+                <div className="mt-2 border-t pt-3">
+                  <h3 className="text-sm font-medium">Attributes</h3>
+                  <form
+                    action={updateVariantAttributes}
+                    className="mt-2 space-y-2"
+                  >
+                    <input type="hidden" name="productId" value={product.id} />
+                    <input type="hidden" name="variantId" value={v.id} />
+
+                    {attributes.map((attr) => {
+                      const selectedForAttribute =
+                        v.variantAttributeValues.find(
+                          (av) => av.attributeValue.attributeId === attr.id
+                        );
+
+                      return (
+                        <div
+                          key={attr.id}
+                          className="flex items-center space-x-2"
+                        >
+                          <label className="w-32 text-sm">{attr.name}</label>
+                          <select
+                            name="attributeValueIds"
+                            defaultValue={
+                              selectedForAttribute?.attributeValue.id ?? ""
+                            }
+                            className="rounded-md border px-2 py-1"
+                          >
+                            <option value="">— none —</option>
+                            {attr.values.map((val: any) => (
+                              <option key={val.id} value={val.id}>
+                                {val.value}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })}
+
+                    <div>
+                      <button className="rounded-md bg-blue-600 px-3 py-1 text-white text-sm">
+                        Save attributes
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             ))
           )}

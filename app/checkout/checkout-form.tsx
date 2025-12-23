@@ -17,6 +17,8 @@ export default function CheckoutForm({ userEmail }: CheckoutFormProps) {
 
   return (
     <form action={formAction} className="border-t pt-4 space-y-4">
+      <input type="hidden" name="intent" value="create-order" />
+
       <label className="block">
         <div className="text-sm mb-2">Email</div>
         <input

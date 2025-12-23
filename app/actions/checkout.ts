@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { CreateOrderSchema } from "@/lib/schemas/order";
 import { formDataToObject } from "@/lib/utils/formData";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -77,5 +78,6 @@ export async function createOrder(
 
     return created;
   });
+  revalidatePath(`/thank-you?order=${order.id}`);
   redirect(`/thank-you?order=${order.id}`);
 }
