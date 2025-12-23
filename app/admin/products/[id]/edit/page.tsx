@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { formatCentsToDollars } from "@/lib/price";
 
 export default async function EditProductPage({
   params,
@@ -29,8 +30,6 @@ export default async function EditProductPage({
     include: { values: true },
   });
 
-  console.log(attributes);
-
   if (!product) return <div className="p-6">Not found</div>;
 
   async function createVariant(formData: FormData) {
@@ -41,11 +40,7 @@ export default async function EditProductPage({
     const priceCents = Number(formData.get("priceCents"));
     const stock = Number(formData.get("stock"));
 
-    if (!productId) throw new Error("Missing productId");
-    if (!name) throw new Error("Name is required");
-    if (!Number.isFinite(priceCents) || priceCents < 0)
-      throw new Error("Invalid priceCents");
-    if (!Number.isFinite(stock) || stock < 0) throw new Error("Invalid stock");
+    if (!productId || !name) throw new Error("Invalid input");
 
     await prisma.variant.create({
       data: {
@@ -53,41 +48,9 @@ export default async function EditProductPage({
         name,
         priceCents,
         stock,
-        sku: skuRaw ? skuRaw : null,
+        sku: skuRaw || null,
       },
     });
-
-    revalidatePath(`/admin/products/${productId}/edit`);
-    redirect(`/admin/products/${productId}/edit`);
-  }
-
-  async function updateVariantAttributes(formData: FormData) {
-    "use server";
-    await requireAdmin();
-
-    const variantId = String(formData.get("variantId") || "");
-    const productId = String(formData.get("productId") || "");
-
-    if (!variantId) throw new Error("Missing variantId");
-    if (!productId) throw new Error("Missing productId");
-
-    // Collect all selected attribute value ids (multiple form inputs with same name)
-    const attributeValueIds = formData
-      .getAll("attributeValueIds")
-      .map(String)
-      .filter(Boolean);
-
-    // Remove existing links and create the new ones
-    await prisma.variantAttributeValue.deleteMany({ where: { variantId } });
-
-    if (attributeValueIds.length > 0) {
-      const createData = attributeValueIds.map((attributeValueId) => ({
-        variantId,
-        attributeValueId,
-      }));
-
-      await prisma.variantAttributeValue.createMany({ data: createData });
-    }
 
     revalidatePath(`/admin/products/${productId}/edit`);
     redirect(`/admin/products/${productId}/edit`);
@@ -97,25 +60,14 @@ export default async function EditProductPage({
     "use server";
     const variantId = String(formData.get("variantId"));
     const productId = String(formData.get("productId"));
-    const name = String(formData.get("name") || "").trim();
-    const skuRaw = String(formData.get("sku") || "").trim();
-    const priceCents = Number(formData.get("priceCents"));
-    const stock = Number(formData.get("stock"));
-
-    if (!variantId) throw new Error("Missing variantId");
-    if (!productId) throw new Error("Missing productId");
-    if (!name) throw new Error("Name is required");
-    if (!Number.isFinite(priceCents) || priceCents < 0)
-      throw new Error("Invalid priceCents");
-    if (!Number.isFinite(stock) || stock < 0) throw new Error("Invalid stock");
 
     await prisma.variant.update({
       where: { id: variantId },
       data: {
-        name,
-        priceCents,
-        stock,
-        sku: skuRaw ? skuRaw : null,
+        name: String(formData.get("name")),
+        priceCents: Number(formData.get("priceCents")),
+        stock: Number(formData.get("stock")),
+        sku: String(formData.get("sku") || "") || null,
       },
     });
 
@@ -128,163 +80,164 @@ export default async function EditProductPage({
     const variantId = String(formData.get("variantId"));
     const productId = String(formData.get("productId"));
 
-    if (!variantId) throw new Error("Missing variantId");
-    if (!productId) throw new Error("Missing productId");
-
-    // If variant is in any cart items, Prisma will throw because your relation is Restrict.
-    // That’s OK for MVP; you’ll see the error and can decide what UX you want later.
     await prisma.variant.delete({ where: { id: variantId } });
 
     revalidatePath(`/admin/products/${productId}/edit`);
     redirect(`/admin/products/${productId}/edit`);
   }
 
+  async function updateVariantAttributes(formData: FormData) {
+    "use server";
+    await requireAdmin();
+
+    const variantId = String(formData.get("variantId"));
+    const productId = String(formData.get("productId"));
+
+    const attributeValueIds = formData
+      .getAll("attributeValueIds")
+      .map(String)
+      .filter(Boolean);
+
+    await prisma.variantAttributeValue.deleteMany({ where: { variantId } });
+
+    if (attributeValueIds.length) {
+      await prisma.variantAttributeValue.createMany({
+        data: attributeValueIds.map((id) => ({
+          variantId,
+          attributeValueId: id,
+        })),
+      });
+    }
+
+    revalidatePath(`/admin/products/${productId}/edit`);
+    redirect(`/admin/products/${productId}/edit`);
+  }
+
   return (
-    <div className="mx-auto max-w-3xl p-6 space-y-8">
-      <div className="flex items-center justify-between">
+    <main className="mx-auto max-w-4xl p-6 space-y-10">
+      <header className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Edit product</h1>
+          <h1 className="text-2xl font-bold">Edit product</h1>
           <p className="text-sm text-gray-500">{product.name}</p>
         </div>
-
-        <Link className="text-sm underline" href="/admin/products">
-          Back
+        <Link href="/admin/products" className="text-sm underline">
+          ← Back
         </Link>
-      </div>
+      </header>
 
-      {/* ===== Variants ===== */}
-      <section className="space-y-4">
+      <section className="space-y-6">
         <div className="flex items-end justify-between">
           <h2 className="text-xl font-semibold">Variants</h2>
-          <p className="text-sm text-gray-500">priceCents + stock for MVP</p>
+          <span className="text-xs text-gray-500">
+            Price & stock only (MVP)
+          </span>
         </div>
 
-        {/* Create */}
-        <form
-          action={createVariant}
-          className="rounded-xl border p-4 space-y-3"
-        >
-          <input type="hidden" name="productId" value={product.id} />
+        <section className="rounded-xl border bg-gray-50 p-4">
+          <h3 className="font-medium mb-3">Add new variant</h3>
+          <form action={createVariant} className="grid gap-4">
+            <input type="hidden" name="productId" value={product.id} />
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-            <div className="md:col-span-2">
-              <label className="text-sm font-medium">Name</label>
-              <input
-                name="name"
-                placeholder="e.g. Standard"
-                className="mt-1 w-full rounded-md border px-3 py-2"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="md:col-span-2">
+                <label className="text-sm">Name</label>
+                <input name="name" required className="input" />
+              </div>
+              <div>
+                <label className="text-sm">priceCents</label>
+                <input
+                  name="priceCents"
+                  type="number"
+                  min={0}
+                  defaultValue={0}
+                  className="input"
+                />
+              </div>
+              <div>
+                <label className="text-sm">Stock</label>
+                <input
+                  name="stock"
+                  type="number"
+                  min={0}
+                  defaultValue={0}
+                  className="input"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium">priceCents</label>
-              <input
-                name="priceCents"
-                type="number"
-                min={0}
-                step={1}
-                defaultValue={0}
-                className="mt-1 w-full rounded-md border px-3 py-2"
-                required
-              />
+            <div className="md:w-1/2">
+              <label className="text-sm">SKU (optional)</label>
+              <input name="sku" className="input" />
             </div>
 
-            <div>
-              <label className="text-sm font-medium">Stock</label>
-              <input
-                name="stock"
-                type="number"
-                min={0}
-                step={1}
-                defaultValue={0}
-                className="mt-1 w-full rounded-md border px-3 py-2"
-                required
-              />
-            </div>
-          </div>
+            <button className="btn-primary w-fit">Add variant</button>
+          </form>
+        </section>
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium">SKU (optional)</label>
-              <input
-                name="sku"
-                placeholder="e.g. SKU-123"
-                className="mt-1 w-full rounded-md border px-3 py-2"
-              />
-            </div>
-          </div>
+        {/* Existing Variants */}
+        <div className="space-y-4">
+          {product.variants.length === 0 && (
+            <p className="text-sm text-gray-500">No variants yet.</p>
+          )}
 
-          <button className="rounded-md bg-black px-4 py-2 text-white">
-            Add variant
-          </button>
-        </form>
+          {product.variants.map((v) => (
+            <details key={v.id} className="rounded-xl border">
+              <summary className="cursor-pointer px-4 py-3 flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{v.name}</p>
+                  <p className="text-xs text-gray-500">
+                    ${formatCentsToDollars(v.priceCents)} · stock {v.stock}
+                  </p>
+                </div>
+                <span className="text-sm text-blue-600">Manage</span>
+              </summary>
 
-        {/* List + Update/Delete */}
-        <div className="space-y-3">
-          {product.variants.length === 0 ? (
-            <div className="text-sm text-gray-500">No variants yet.</div>
-          ) : (
-            product.variants.map((v) => (
-              <div key={v.id} className="rounded-xl border p-4 space-y-3">
-                <form action={updateVariant} className="space-y-3">
+              <div className="p-4 space-y-5 border-t">
+                {/* Edit Variant */}
+                <form action={updateVariant} className="space-y-4">
                   <input type="hidden" name="productId" value={product.id} />
                   <input type="hidden" name="variantId" value={v.id} />
 
-                  <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div className="md:col-span-2">
-                      <label className="text-sm font-medium">Name</label>
+                      <label className="text-sm">Name</label>
                       <input
                         name="name"
                         defaultValue={v.name}
-                        className="mt-1 w-full rounded-md border px-3 py-2"
-                        required
+                        className="input"
                       />
                     </div>
-
                     <div>
-                      <label className="text-sm font-medium">priceCents</label>
+                      <label className="text-sm">priceCents</label>
                       <input
                         name="priceCents"
                         type="number"
-                        min={0}
-                        step={1}
                         defaultValue={v.priceCents}
-                        className="mt-1 w-full rounded-md border px-3 py-2"
-                        required
+                        className="input"
                       />
                     </div>
-
                     <div>
-                      <label className="text-sm font-medium">Stock</label>
+                      <label className="text-sm">Stock</label>
                       <input
                         name="stock"
                         type="number"
-                        min={0}
-                        step={1}
                         defaultValue={v.stock}
-                        className="mt-1 w-full rounded-md border px-3 py-2"
-                        required
+                        className="input"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div>
-                      <label className="text-sm font-medium">SKU</label>
-                      <input
-                        name="sku"
-                        defaultValue={v.sku ?? ""}
-                        className="mt-1 w-full rounded-md border px-3 py-2"
-                      />
-                    </div>
+                  <div className="md:w-1/2">
+                    <label className="text-sm">SKU</label>
+                    <input
+                      name="sku"
+                      defaultValue={v.sku ?? ""}
+                      className="input"
+                    />
                   </div>
 
-                  <div className="flex gap-2">
-                    <button className="rounded-md bg-black px-4 py-2 text-white">
-                      Save
-                    </button>
-
+                  <div className="flex gap-3">
+                    <button className="btn-primary">Save</button>
                     <form action={deleteVariant}>
                       <input
                         type="hidden"
@@ -293,8 +246,12 @@ export default async function EditProductPage({
                       />
                       <input type="hidden" name="variantId" value={v.id} />
                       <button
-                        className="rounded-md border px-4 py-2"
-                        formAction={deleteVariant}
+                        className="btn-danger"
+                        type="submit"
+                        // onClick={(e) => {
+                        //   if (!confirm("Delete this variant?"))
+                        //     e.preventDefault();
+                        // }}
                       >
                         Delete
                       </button>
@@ -302,58 +259,45 @@ export default async function EditProductPage({
                   </div>
                 </form>
 
-                {/* Attribute values assignment */}
-                <div className="mt-2 border-t pt-3">
-                  <h3 className="text-sm font-medium">Attributes</h3>
-                  <form
-                    action={updateVariantAttributes}
-                    className="mt-2 space-y-2"
-                  >
-                    <input type="hidden" name="productId" value={product.id} />
-                    <input type="hidden" name="variantId" value={v.id} />
+                <form action={updateVariantAttributes} className="space-y-3">
+                  <input type="hidden" name="productId" value={product.id} />
+                  <input type="hidden" name="variantId" value={v.id} />
 
-                    {attributes.map((attr) => {
-                      const selectedForAttribute =
-                        v.variantAttributeValues.find(
-                          (av) => av.attributeValue.attributeId === attr.id
-                        );
+                  <h4 className="text-sm font-medium">Attributes</h4>
 
-                      return (
-                        <div
-                          key={attr.id}
-                          className="flex items-center space-x-2"
+                  {attributes.map((attr) => {
+                    const selected = v.variantAttributeValues.find(
+                      (av) => av.attributeValue.attributeId === attr.id
+                    );
+
+                    return (
+                      <div key={attr.id} className="flex items-center gap-3">
+                        <label className="w-32 text-sm">{attr.name}</label>
+                        <select
+                          name="attributeValueIds"
+                          defaultValue={selected?.attributeValue.id ?? ""}
+                          className="input py-1"
                         >
-                          <label className="w-32 text-sm">{attr.name}</label>
-                          <select
-                            name="attributeValueIds"
-                            defaultValue={
-                              selectedForAttribute?.attributeValue.id ?? ""
-                            }
-                            className="rounded-md border px-2 py-1"
-                          >
-                            <option value="">— none —</option>
-                            {attr.values.map((val: any) => (
-                              <option key={val.id} value={val.id}>
-                                {val.value}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      );
-                    })}
+                          <option value="">— none —</option>
+                          {attr.values.map((val) => (
+                            <option key={val.id} value={val.id}>
+                              {val.value}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  })}
 
-                    <div>
-                      <button className="rounded-md bg-blue-600 px-3 py-1 text-white text-sm">
-                        Save attributes
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                  <button className="btn-secondary w-fit">
+                    Save attributes
+                  </button>
+                </form>
               </div>
-            ))
-          )}
+            </details>
+          ))}
         </div>
       </section>
-    </div>
+    </main>
   );
 }
