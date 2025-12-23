@@ -27,7 +27,17 @@ export default async function ProductsPage({
   const words = query ? query.split(/\s+/).filter(Boolean) : [];
 
   const attributes = await prisma.attribute.findMany({
-    include: { values: true },
+    where: {
+      values: {
+        some: { variantAttributeValues: { some: {} } },
+      },
+    },
+    include: {
+      values: {
+        where: { variantAttributeValues: { some: {} } },
+        orderBy: { value: "asc" },
+      },
+    },
     orderBy: { name: "asc" },
   });
 

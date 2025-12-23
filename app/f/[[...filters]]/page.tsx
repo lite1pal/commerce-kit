@@ -44,8 +44,40 @@ export default async function ProductsPage({
       : {};
 
   const attributes = await prisma.attribute.findMany({
-    include: { values: true },
+    where: {
+      values: {
+        some: {
+          variantAttributeValues: {
+            some: {
+              variant: {
+                product: {
+                  active: true,
+                  ...variantFilters,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     orderBy: { name: "asc" },
+    include: {
+      values: {
+        where: {
+          variantAttributeValues: {
+            some: {
+              variant: {
+                product: {
+                  active: true,
+                  ...variantFilters,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { value: "asc" },
+      },
+    },
   });
 
   const products = await prisma.product.findMany({
