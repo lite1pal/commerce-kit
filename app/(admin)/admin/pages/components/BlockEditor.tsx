@@ -16,8 +16,6 @@ import { CatalogProduct } from "@/lib/types/catalog-product";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
-import { DataTable } from "../../components/ui/data-table";
-import { productColumns } from "../../collections/[id]/edit/columns";
 
 const BLOCK_TYPES: { type: PageBlock["type"]; label: string }[] = [
   { type: "heading", label: "Heading" },
@@ -39,29 +37,6 @@ function CatalogFilterBlockEditor({
   onChange: (filters: any) => void;
 }) {
   const [previewProducts, setPreviewProducts] = useState<CatalogProduct[]>([]);
-  // const [selected, setSelected] = useState<string[]>([]);
-
-  // function toggleAllVisible() {
-  //   const ids = previewProducts.map((p) => p.id);
-  //   const allSelected =
-  //     ids.length > 0 && ids.every((id) => selected.includes(id));
-  //   if (allSelected) {
-  //     // remove visible ids
-  //     setSelected((prev) => prev.filter((id) => !ids.includes(id)));
-  //   } else {
-  //     // add visible ids
-  //     setSelected((prev) => Array.from(new Set([...prev, ...ids])));
-  //   }
-  // }
-  // function toggleProduct(id: string) {
-  //   setSelected((prev) =>
-  //     prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
-  //   );
-  // }
-
-  // const allVisibleSelected =
-  //   previewProducts.length > 0 &&
-  //   previewProducts.every((p) => selected.includes(p.id));
 
   useEffect(() => {
     async function fetchPreview() {
@@ -83,25 +58,6 @@ function CatalogFilterBlockEditor({
       onChange={onChange}
       previewProducts={previewProducts}
     />
-
-    //   <div className="mt-3">
-    //     {previewProducts.length > 0 ? (
-    //       <DataTable
-    //         columns={productColumns(
-    //           selected,
-    //           toggleProduct,
-    //           toggleAllVisible,
-    //           allVisibleSelected
-    //         )}
-    //         data={previewProducts}
-    //       />
-    //     ) : (
-    //       <div className="text-sm text-neutral-500">
-    //         No products to preview for current filters.
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
   );
 }
 
@@ -175,113 +131,114 @@ export default function BlockEditor({ value }: BlockEditorProps) {
           </Button>
         ))}
       </div>
-      {blocks.map((block: PageBlock, idx: number) => (
-        <div key={idx} className="border p-2 mb-2">
-          <div className="flex justify-between items-center mb-1">
-            <span className="font-bold">{block.type}</span>
-            <div className="flex gap-2">
-              <div className="flex gap-2 mr-10">
+      <div className="flex flex-col gap-3 mt-5">
+        {blocks.map((block: PageBlock, idx: number) => (
+          <div key={idx} className="mb-2">
+            <div className="flex justify-between items-center mb-1">
+              <span className="font-semibold text-xl">{block.type}</span>
+              <div className="flex gap-2">
+                <div className="flex gap-2 mr-10">
+                  <button
+                    type="button"
+                    onClick={() => moveBlockUp(idx)}
+                    disabled={idx === 0}
+                    title="Move up"
+                    className="text-gray-500 disabled:opacity-40"
+                    style={{ fontSize: "1.1em" }}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveBlockDown(idx)}
+                    disabled={idx === blocks.length - 1}
+                    title="Move down"
+                    className="text-gray-500 disabled:opacity-40"
+                    style={{ fontSize: "1.1em" }}
+                  >
+                    ↓
+                  </button>
+                </div>
                 <button
                   type="button"
-                  onClick={() => moveBlockUp(idx)}
-                  disabled={idx === 0}
-                  title="Move up"
-                  className="text-gray-500 disabled:opacity-40"
-                  style={{ fontSize: "1.1em" }}
+                  onClick={() => removeBlock(idx)}
+                  className="text-red-600"
                 >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => moveBlockDown(idx)}
-                  disabled={idx === blocks.length - 1}
-                  title="Move down"
-                  className="text-gray-500 disabled:opacity-40"
-                  style={{ fontSize: "1.1em" }}
-                >
-                  ↓
+                  Remove
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={() => removeBlock(idx)}
-                className="text-red-600"
-              >
-                Remove
-              </button>
             </div>
-          </div>
-          {block.type === "heading" && (
-            <Input
-              className="input"
-              value={block.props.text}
-              onChange={(e) =>
-                updateBlock(idx, { ...block.props, text: e.target.value })
-              }
-              placeholder="Heading text"
-            />
-          )}
-          {block.type === "paragraph" && (
-            <Textarea
-              className="input"
-              value={block.props.text}
-              onChange={(e) =>
-                updateBlock(idx, { ...block.props, text: e.target.value })
-              }
-              placeholder="Paragraph text"
-            />
-          )}
-          {block.type === "image" && (
-            <>
-              <Input
-                className="input"
-                value={block.props.url}
-                onChange={(e) =>
-                  updateBlock(idx, { ...block.props, url: e.target.value })
-                }
-                placeholder="Image URL"
-              />
-              <Input
-                className="input"
-                value={block.props.alt}
-                onChange={(e) =>
-                  updateBlock(idx, { ...block.props, alt: e.target.value })
-                }
-                placeholder="Alt text"
-              />
-            </>
-          )}
-          {block.type === "button" && (
-            <>
+            {block.type === "heading" && (
               <Input
                 className="input"
                 value={block.props.text}
                 onChange={(e) =>
                   updateBlock(idx, { ...block.props, text: e.target.value })
                 }
-                placeholder="Button text"
+                placeholder="Heading text"
               />
-              <Input
+            )}
+            {block.type === "paragraph" && (
+              <Textarea
                 className="input"
-                value={block.props.url}
+                value={block.props.text}
                 onChange={(e) =>
-                  updateBlock(idx, { ...block.props, url: e.target.value })
+                  updateBlock(idx, { ...block.props, text: e.target.value })
                 }
-                placeholder="Button URL"
+                placeholder="Paragraph text"
               />
-            </>
-          )}
-          {block.type === "catalog" && (
-            <CatalogFilterBlockEditor
-              filters={block.props.filters || {}}
-              onChange={(filters: any) =>
-                updateBlock(idx, { ...block.props, filters })
-              }
-            />
-          )}
-        </div>
-      ))}
-      {/* Hidden input for form submission */}
+            )}
+            {block.type === "image" && (
+              <>
+                <Input
+                  className="input"
+                  value={block.props.url}
+                  onChange={(e) =>
+                    updateBlock(idx, { ...block.props, url: e.target.value })
+                  }
+                  placeholder="Image URL"
+                />
+                <Input
+                  className="input"
+                  value={block.props.alt}
+                  onChange={(e) =>
+                    updateBlock(idx, { ...block.props, alt: e.target.value })
+                  }
+                  placeholder="Alt text"
+                />
+              </>
+            )}
+            {block.type === "button" && (
+              <>
+                <Input
+                  className="input"
+                  value={block.props.text}
+                  onChange={(e) =>
+                    updateBlock(idx, { ...block.props, text: e.target.value })
+                  }
+                  placeholder="Button text"
+                />
+                <Input
+                  className="input"
+                  value={block.props.url}
+                  onChange={(e) =>
+                    updateBlock(idx, { ...block.props, url: e.target.value })
+                  }
+                  placeholder="Button URL"
+                />
+              </>
+            )}
+            {block.type === "catalog" && (
+              <CatalogFilterBlockEditor
+                filters={block.props.filters || {}}
+                onChange={(filters: any) =>
+                  updateBlock(idx, { ...block.props, filters })
+                }
+              />
+            )}
+          </div>
+        ))}
+      </div>
       <input type="hidden" name="content" value={JSON.stringify(blocks)} />
     </div>
   );

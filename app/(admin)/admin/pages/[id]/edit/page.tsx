@@ -1,6 +1,11 @@
 import { getPage, updatePage } from "../../actions";
 import { notFound, redirect } from "next/navigation";
 import BlockEditor from "../../components/BlockEditor";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import PageContainer from "../../../components/page-container";
+import PageHeader from "../../../components/page-header";
+import { Field, FieldGroup, FieldLabel } from "../../../components/ui/field";
 
 type PageEditProps = {
   params: Promise<{ id: string }>;
@@ -31,33 +36,25 @@ export default async function PageEdit({ params }: PageEditProps) {
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-6">
-      <form
-        action={handleSubmit}
-        className="bg-white rounded-lg shadow p-6 space-y-6 border"
-      >
-        <h2 className="text-2xl font-bold mb-2 text-neutral-900">Edit Page</h2>
-        <div className="space-y-2">
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-neutral-700"
-          >
-            Title
-          </label>
-          <input
-            id="title"
-            name="title"
-            defaultValue={page.title}
-            required
-            className="input w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-1">
-            Content
-          </label>
-          <BlockEditor value={initialBlocks} />
-        </div>
+    <PageContainer>
+      <PageHeader>Edit Page</PageHeader>
+      <form action={handleSubmit}>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="title">Title</FieldLabel>
+            <Input
+              id="title"
+              name="title"
+              defaultValue={page.title}
+              required
+              className="input w-full"
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Content</FieldLabel>
+            <BlockEditor value={initialBlocks} />
+          </Field>
+        </FieldGroup>
         <input
           type="hidden"
           name="content"
@@ -65,14 +62,14 @@ export default async function PageEdit({ params }: PageEditProps) {
           defaultValue={JSON.stringify(initialBlocks)}
         />
         <div className="flex justify-end gap-2 pt-2">
-          <button
+          <Button
             type="submit"
             className="btn px-6 py-2 bg-blue-600 text-white rounded-md font-semibold shadow hover:bg-blue-700 transition"
           >
             Save
-          </button>
+          </Button>
         </div>
       </form>
-    </main>
+    </PageContainer>
   );
 }

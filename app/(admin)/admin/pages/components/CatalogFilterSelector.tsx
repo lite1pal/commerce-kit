@@ -81,7 +81,8 @@ export default function CatalogFilterSelector({
         ))}
       </div>
       <div className="mt-4">
-        <CatalogGrid products={previewProducts} />
+        Chosen products: {previewProducts.length}
+        {/* <CatalogGrid products={previewProducts} /> */}
       </div>
     </div>
   );
