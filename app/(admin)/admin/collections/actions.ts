@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import prisma from "@/lib/prisma";
 import { UpdateCollectionSchema } from "@/lib/schemas/collection";
 import { formDataToObject } from "@/lib/utils/form-data";
+import z from "zod";
 
 export async function getCollections() {
   await requireAdmin();
@@ -35,8 +36,8 @@ export async function updateCollectionById(_: any, formData: FormData) {
   const parsed = UpdateCollectionSchema.safeParse(formDataToObject(formData));
 
   if (!parsed.success) {
-    console.error(parsed.error.message);
-    return { message: "Invalid form data" };
+    console.error(parsed.error);
+    return { message: "Some form field is empty or invalid" };
   }
 
   const { id, name, slug, description, productIds } = parsed.data;
