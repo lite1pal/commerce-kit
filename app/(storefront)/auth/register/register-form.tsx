@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect } from "react";
+import { useFormStatus } from "react-dom";
 import Button from "@/app/(storefront)/components/button";
 import { register } from "../actions";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ function SubmitButton() {
 
 export default function RegisterForm() {
   const router = useRouter();
-  const [state, formAction] = useFormState(register, initialAuthState);
+  const [state, formAction] = useActionState(register, initialAuthState);
 
   useEffect(() => {
     if (state.ok) {

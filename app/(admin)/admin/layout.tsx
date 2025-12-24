@@ -4,6 +4,8 @@ import { adminLogout } from "./login/actions";
 import { getCurrentUser } from "../../(storefront)/auth/actions";
 
 import "../../globals.css";
+import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
 
 export const metadata = {
   title: {
@@ -31,19 +33,13 @@ export default async function AdminLayout({
   return (
     <html lang="en" className={isDark ? "dark" : ""}>
       <body>
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="mb-6 flex items-center justify-between">
-            <Link href="/admin/products" className="font-semibold">
-              Admin
-            </Link>
-            <form action={adminLogout}>
-              <button className="text-sm underline cursor-pointer">
-                Logout
-              </button>
-            </form>
-          </div>
-          {children}
-        </div>
+        <SidebarProvider>
+          <AppSidebar user={user} />
+          <main className="w-full mx-auto">
+            <SidebarTrigger />
+            <div className="mx-auto w-full max-w-7xl px-6 py-8">{children}</div>
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );

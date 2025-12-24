@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { adminLogin } from "./actions";
 import { createInitialState } from "@/app/(storefront)/auth/action-helpers";
@@ -19,7 +19,7 @@ function SubmitButton() {
 
 export default function AdminLoginForm() {
   const router = useRouter();
-  const [state, formAction] = useFormState(adminLogin, initialAdminState);
+  const [state, formAction] = useActionState(adminLogin, initialAdminState);
 
   useEffect(() => {
     if (state.ok) {
