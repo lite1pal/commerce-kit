@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCollectionById } from "../../actions";
-import PageContainer from "../../../components/PageContainer";
+import PageContainer from "../../../components/page-container";
 import CollectionForm from "./collection-form";
 
 type EditCollectionPageProps = {

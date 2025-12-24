@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import Button from "./Button";
+import { Button } from "./ui/button";
 
 type PageHeaderProps = {
   children: ReactNode;

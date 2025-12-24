@@ -1,6 +1,6 @@
 import { getCollections } from "./actions";
-import PageHeader from "../components/PageHeader";
-import PageContainer from "../components/PageContainer";
+import PageHeader from "../components/page-header";
+import PageContainer from "../components/page-container";
 import { DataTable } from "../components/ui/data-table";
 import { columns } from "./columns";
 
