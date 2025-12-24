@@ -4,7 +4,12 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getPages() {
-  return prisma.page.findMany({ orderBy: { createdAt: "desc" } });
+  return prisma.page.findMany({
+    orderBy: { createdAt: "desc" },
+    omit: {
+      content: true,
+    },
+  });
 }
 
 export async function getPage(id: string) {
@@ -36,6 +41,18 @@ export async function updatePage(
 
 export async function deletePage(id: string) {
   await prisma.page.delete({ where: { id } });
+
+  revalidatePath("/admin/pages");
+}
+
+export async function togglePageVisible(pageId: string) {
+  const p = await prisma.page.findUnique({ where: { id: pageId } });
+  if (!p) return;
+
+  await prisma.page.update({
+    where: { id: pageId },
+    data: { visible: !p.visible },
+  });
 
   revalidatePath("/admin/pages");
 }

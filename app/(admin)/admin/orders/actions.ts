@@ -6,7 +6,6 @@ import prisma from "@/lib/prisma";
 import { UpdateOrderSchema } from "@/lib/schemas/order";
 import { formDataToObject } from "@/lib/utils/form-data";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function updateOrder(
   _: any,
@@ -47,7 +46,6 @@ export async function updateOrder(
 
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}/edit`);
-  redirect("/admin/orders");
 }
 
 export async function deleteOrder(orderId: string) {

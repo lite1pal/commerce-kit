@@ -2,6 +2,10 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { toggleUserRole } from "./actions";
 import { getCurrentUser } from "@/app/(storefront)/auth/actions";
+import PageContainer from "../components/page-container";
+import PageHeader from "../components/page-header";
+import { DataTable } from "../components/ui/data-table";
+import { columns } from "./columns";
 
 export const metadata = { title: "Users" };
 
@@ -10,23 +14,25 @@ export default async function AdminUsersPage() {
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    select: { id: true, role: true, email: true },
+    select: {
+      id: true,
+      role: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     where: { id: { not: currentUser?.id } },
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">users</h1>
-        <Link
-          className="rounded-lg border px-3 py-2 text-sm"
-          href="/admin/users/new"
-        >
-          + New user
-        </Link>
-      </div>
+    <PageContainer>
+      <PageHeader buttonHref="/admin/users/new" buttonTitle="+ New user">
+        Users
+      </PageHeader>
 
-      <div className="mt-6 overflow-hidden rounded-xl border">
+      <DataTable columns={columns} data={users} />
+
+      {/* <div className="mt-6 overflow-hidden rounded-xl border">
         <table className="w-full text-sm">
           <thead className="bg-gray-50">
             <tr className="text-left">
@@ -66,7 +72,7 @@ export default async function AdminUsersPage() {
             ) : null}
           </tbody>
         </table>
-      </div>
-    </div>
+      </div> */}
+    </PageContainer>
   );
 }
