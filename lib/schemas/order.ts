@@ -11,8 +11,6 @@ export const UpdateOrderSchema = z.object({
   intent: z.literal("update-order-status"),
 });
 
-export type UpdateOrderInput = z.infer<typeof UpdateOrderSchema>;
-
 export const CreateOrderSchema = z.object({
   email: z.email(),
   intent: z.literal("create-order"),

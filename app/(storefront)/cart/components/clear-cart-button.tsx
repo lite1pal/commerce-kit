@@ -2,8 +2,8 @@
 
 import { useTransition } from "react";
 
-import Button from "@/components/Button";
-import { clearCart } from "@/app/actions/cart";
+import Button from "@/app/(storefront)/components/button";
+import { clearCart } from "@/app/(storefront)/actions/cart";
 
 export default function ClearCartButton() {
   const [pending, startTransition] = useTransition();

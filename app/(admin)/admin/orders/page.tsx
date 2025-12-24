@@ -2,6 +2,8 @@ import { formatCentsToDollars } from "@/lib/price";
 import { getOrders, deleteOrder } from "./actions";
 import Link from "next/link";
 
+export const metadata = { title: "Orders" };
+
 export default async function OrdersPage() {
   const orders = await getOrders();
 

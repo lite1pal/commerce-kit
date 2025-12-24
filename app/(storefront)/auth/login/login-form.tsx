@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import Button from "@/components/Button";
-import { register } from "../actions";
+import Button from "@/app/(storefront)/components/button";
+import { login } from "../actions";
 import { useRouter } from "next/navigation";
 import { initialAuthState } from "../action-helpers";
 
@@ -11,14 +11,14 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" fullWidth disabled={pending}>
-      {pending ? "Registering..." : "Register"}
+      {pending ? "Logging in..." : "Login"}
     </Button>
   );
 }
 
-export default function RegisterForm() {
+export default function LoginForm() {
   const router = useRouter();
-  const [state, formAction] = useFormState(register, initialAuthState);
+  const [state, formAction] = useFormState(login, initialAuthState);
 
   useEffect(() => {
     if (state.ok) {

@@ -2,8 +2,8 @@
 
 import { useTransition } from "react";
 
-import Button from "@/components/Button";
-import { addToCart } from "@/app/actions/cart";
+import Button from "@/app/(storefront)/components/button";
+import { addToCart } from "@/app/(storefront)/actions/cart";
 
 export default function AddToCartForm({
   variantId,

@@ -5,7 +5,7 @@ const CatalogFilterSelector = dynamic(() => import("./CatalogFilterSelector"), {
   ssr: false,
 });
 import { useState, useEffect } from "react";
-import type { CatalogProduct } from "@/components/CatalogGrid";
+import type { CatalogProduct } from "@/app/(storefront)/components/catalog-grid";
 import {
   ButtonBlock,
   HeadingBlock,

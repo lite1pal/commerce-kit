@@ -1,6 +1,8 @@
 import { getPages, deletePage } from "./actions";
 import Link from "next/link";
 
+export const metadata = { title: "Pages" };
+
 export default async function AdminPagesList() {
   const pages = await getPages();
 

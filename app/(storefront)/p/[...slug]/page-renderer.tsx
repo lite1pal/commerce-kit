@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CatalogGrid, { CatalogProduct } from "@/components/CatalogGrid";
+import CatalogGrid, {
+  CatalogProduct,
+} from "@/app/(storefront)/components/catalog-grid";
 
 export type HeadingBlock = {
   type: "heading";

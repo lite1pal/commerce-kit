@@ -2,9 +2,9 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Search from "@/components/Search";
+import Search from "@/app/(storefront)/components/search";
 import { buildFilterUrl } from "@/lib/domain/products-filters";
-import CatalogGrid from "@/components/CatalogGrid";
+import CatalogGrid from "@/app/(storefront)/components/catalog-grid";
 
 export const metadata: Metadata = {
   title: "Products",

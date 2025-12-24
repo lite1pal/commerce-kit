@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Button from "@/components/Button";
+import Button from "@/app/(storefront)/components/button";
 import { FindOrdersSchema } from "@/lib/schemas/order";
 
 function OrderEmailForm({ defaultEmail }: { defaultEmail: string }) {

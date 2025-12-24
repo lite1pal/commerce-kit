@@ -2,6 +2,8 @@ import Link from "next/link";
 import { deleteProduct, toggleProductActive } from "./actions";
 import prisma from "@/lib/prisma";
 
+export const metadata = { title: "Products" };
+
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },

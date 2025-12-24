@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import Search from "@/components/Search";
-import CatalogGrid from "@/components/CatalogGrid";
+import Search from "@/app/(storefront)/components/search";
+import CatalogGrid from "@/app/(storefront)/components/catalog-grid";
 import { buildFilterUrl, parseFilters } from "@/lib/domain/products-filters";
 import { redirect } from "next/navigation";
 

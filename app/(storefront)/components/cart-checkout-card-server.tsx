@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
-import CartCheckoutCard from "./CartCheckoutCard";
+import CartCheckoutCard from "./cart-checkout-card";
 
 export default async function CartCheckoutCardServer() {
   const jar = await cookies();

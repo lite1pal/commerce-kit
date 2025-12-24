@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { toggleUserRole } from "./actions";
 import { getCurrentUser } from "@/app/(storefront)/auth/actions";
 
+export const metadata = { title: "Users" };
+
 export default async function AdminUsersPage() {
   const currentUser = await getCurrentUser();
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import Button from "@/components/Button";
-import { createOrder } from "@/app/actions/checkout";
+import Button from "@/app/(storefront)/components/button";
+import { createOrder } from "@/app/(storefront)/actions/checkout";
 
 type CheckoutFormProps = {
   userEmail?: string;

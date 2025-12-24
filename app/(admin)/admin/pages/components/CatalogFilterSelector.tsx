@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import CatalogGrid, { CatalogProduct } from "@/components/CatalogGrid";
+import CatalogGrid from "@/app/(storefront)/components/catalog-grid";
+import { Input } from "../../components/ui/input";
+import { Field, FieldLabel } from "../../components/ui/field";
+import type { CatalogProduct } from "@/lib/types/catalog-product";
 
 export type CatalogFilter = {
   query?: string;
@@ -46,16 +49,16 @@ export default function CatalogFilterSelector({
 
   return (
     <div>
-      <input
+      <Input
         className="input mb-2"
         placeholder="Search products..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <div className="mb-4">
+      <div className="mb-4 mt-3 flex flex-col gap-3">
         {attributes.map((attr) => (
-          <div key={attr.id} className="mb-2">
-            <div className="font-semibold mb-1">{attr.name}</div>
+          <Field key={attr.id} className="mb-2">
+            <FieldLabel className="font-semibold mb-1">{attr.name}</FieldLabel>
             <div className="flex flex-wrap gap-2">
               {attr.values.map((val: any) => {
                 const checked = (selected[attr.name] || []).includes(val.value);
@@ -74,11 +77,10 @@ export default function CatalogFilterSelector({
                 );
               })}
             </div>
-          </div>
+          </Field>
         ))}
       </div>
       <div className="mt-4">
-        <div className="font-semibold mb-2">Preview:</div>
         <CatalogGrid products={previewProducts} />
       </div>
     </div>

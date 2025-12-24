@@ -1,13 +1,6 @@
 import Link from "next/link";
 import { formatCentsToDollars } from "@/lib/price";
-
-export type CatalogProduct = {
-  id: string;
-  slug: string;
-  name: string;
-  images: { url: string }[];
-  variants: { priceCents: number }[];
-};
+import { CatalogProduct } from "@/lib/types/catalog-product";
 
 export type CatalogGridProps = {
   products: CatalogProduct[];

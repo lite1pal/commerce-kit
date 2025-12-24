@@ -1,10 +1,10 @@
 "use server";
 
-import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { assertValidOrderStatusTransition } from "@/lib/domain/order-status";
 import prisma from "@/lib/prisma";
 import { UpdateOrderSchema } from "@/lib/schemas/order";
-import { formDataToObject } from "@/lib/utils/formData";
+import { formDataToObject } from "@/lib/utils/form-data";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

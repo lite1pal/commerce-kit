@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { CatalogProduct } from "@/lib/types/catalog-product";
 
 function buildVariantFilters(attributeFilters: Record<string, string[]>) {
   if (!attributeFilters || Object.keys(attributeFilters).length === 0)
@@ -22,12 +23,12 @@ function buildVariantFilters(attributeFilters: Record<string, string[]>) {
   };
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { query, attributeFilters } = await req.json();
   const words = query ? query.split(/\s+/).filter(Boolean) : [];
   const variantFilters = buildVariantFilters(attributeFilters);
 
-  const products = await prisma.product.findMany({
+  const products: CatalogProduct[] = await prisma.product.findMany({
     where: {
       active: true,
       ...variantFilters,
@@ -38,12 +39,19 @@ export async function POST(req: Request) {
       }),
     },
     orderBy: { createdAt: "desc" },
-    include: {
-      images: { take: 1 },
-      variants: { orderBy: { priceCents: "asc" }, take: 1 },
-    },
     take: 12,
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      images: { select: { url: true }, take: 1 },
+      variants: {
+        select: { priceCents: true },
+        orderBy: { priceCents: "asc" },
+        take: 1,
+      },
+    },
   });
 
-  return NextResponse.json({ products });
+  return NextResponse.json(products);
 }

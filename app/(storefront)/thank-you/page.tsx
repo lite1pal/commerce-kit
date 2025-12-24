@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { markOrderPaid } from "@/app/actions/order";
+import { markOrderPaid } from "@/app/(storefront)/actions/order";
 import Link from "next/link";
 
 export default async function ThankYouPage({

@@ -2,8 +2,11 @@
 
 import { useTransition } from "react";
 
-import Button from "@/components/Button";
-import { removeFromCart, setCartItemQuantity } from "@/app/actions/cart";
+import Button from "@/app/(storefront)/components/button";
+import {
+  removeFromCart,
+  setCartItemQuantity,
+} from "@/app/(storefront)/actions/cart";
 
 export default function CartItemRow({
   variantId,
