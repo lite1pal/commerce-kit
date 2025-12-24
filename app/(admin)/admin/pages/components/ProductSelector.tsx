@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import CatalogGrid, {
-  CatalogProduct,
-} from "@/app/(storefront)/components/catalog-grid";
+import CatalogGrid from "@/app/(storefront)/components/catalog-grid";
+import { CatalogProduct } from "@/lib/types/catalog-product";
 
 export default function ProductSelector({
   selected,

@@ -5,7 +5,6 @@ const CatalogFilterSelector = dynamic(() => import("./CatalogFilterSelector"), {
   ssr: false,
 });
 import { useState, useEffect } from "react";
-import type { CatalogProduct } from "@/app/(storefront)/components/catalog-grid";
 import {
   ButtonBlock,
   HeadingBlock,
@@ -13,6 +12,12 @@ import {
   PageBlock,
   ParagraphBlock,
 } from "@/app/(storefront)/p/[...slug]/page-renderer";
+import { CatalogProduct } from "@/lib/types/catalog-product";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { DataTable } from "../../components/ui/data-table";
+import { productColumns } from "../../collections/[id]/edit/columns";
 
 const BLOCK_TYPES: { type: PageBlock["type"]; label: string }[] = [
   { type: "heading", label: "Heading" },
@@ -34,6 +39,29 @@ function CatalogFilterBlockEditor({
   onChange: (filters: any) => void;
 }) {
   const [previewProducts, setPreviewProducts] = useState<CatalogProduct[]>([]);
+  // const [selected, setSelected] = useState<string[]>([]);
+
+  // function toggleAllVisible() {
+  //   const ids = previewProducts.map((p) => p.id);
+  //   const allSelected =
+  //     ids.length > 0 && ids.every((id) => selected.includes(id));
+  //   if (allSelected) {
+  //     // remove visible ids
+  //     setSelected((prev) => prev.filter((id) => !ids.includes(id)));
+  //   } else {
+  //     // add visible ids
+  //     setSelected((prev) => Array.from(new Set([...prev, ...ids])));
+  //   }
+  // }
+  // function toggleProduct(id: string) {
+  //   setSelected((prev) =>
+  //     prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+  //   );
+  // }
+
+  // const allVisibleSelected =
+  //   previewProducts.length > 0 &&
+  //   previewProducts.every((p) => selected.includes(p.id));
 
   useEffect(() => {
     async function fetchPreview() {
@@ -42,18 +70,38 @@ function CatalogFilterBlockEditor({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(filters),
       });
-      const data = await res.json();
-      setPreviewProducts(data.products);
+      const data: CatalogProduct[] = await res.json();
+      setPreviewProducts(data);
     }
     fetchPreview();
   }, [filters]);
 
   return (
+    // <div>
     <CatalogFilterSelector
       filters={filters}
       onChange={onChange}
       previewProducts={previewProducts}
     />
+
+    //   <div className="mt-3">
+    //     {previewProducts.length > 0 ? (
+    //       <DataTable
+    //         columns={productColumns(
+    //           selected,
+    //           toggleProduct,
+    //           toggleAllVisible,
+    //           allVisibleSelected
+    //         )}
+    //         data={previewProducts}
+    //       />
+    //     ) : (
+    //       <div className="text-sm text-neutral-500">
+    //         No products to preview for current filters.
+    //       </div>
+    //     )}
+    //   </div>
+    // </div>
   );
 }
 
@@ -116,14 +164,15 @@ export default function BlockEditor({ value }: BlockEditorProps) {
     <div>
       <div className="mb-2">
         {BLOCK_TYPES.map((b) => (
-          <button
+          <Button
+            variant="outline"
             type="button"
             key={b.type}
             onClick={() => addBlock(b.type)}
             className="mr-2 btn"
           >
             + {b.label}
-          </button>
+          </Button>
         ))}
       </div>
       {blocks.map((block: PageBlock, idx: number) => (
@@ -163,7 +212,7 @@ export default function BlockEditor({ value }: BlockEditorProps) {
             </div>
           </div>
           {block.type === "heading" && (
-            <input
+            <Input
               className="input"
               value={block.props.text}
               onChange={(e) =>
@@ -173,7 +222,7 @@ export default function BlockEditor({ value }: BlockEditorProps) {
             />
           )}
           {block.type === "paragraph" && (
-            <textarea
+            <Textarea
               className="input"
               value={block.props.text}
               onChange={(e) =>
@@ -184,7 +233,7 @@ export default function BlockEditor({ value }: BlockEditorProps) {
           )}
           {block.type === "image" && (
             <>
-              <input
+              <Input
                 className="input"
                 value={block.props.url}
                 onChange={(e) =>
@@ -192,7 +241,7 @@ export default function BlockEditor({ value }: BlockEditorProps) {
                 }
                 placeholder="Image URL"
               />
-              <input
+              <Input
                 className="input"
                 value={block.props.alt}
                 onChange={(e) =>
@@ -204,7 +253,7 @@ export default function BlockEditor({ value }: BlockEditorProps) {
           )}
           {block.type === "button" && (
             <>
-              <input
+              <Input
                 className="input"
                 value={block.props.text}
                 onChange={(e) =>
@@ -212,7 +261,7 @@ export default function BlockEditor({ value }: BlockEditorProps) {
                 }
                 placeholder="Button text"
               />
-              <input
+              <Input
                 className="input"
                 value={block.props.url}
                 onChange={(e) =>

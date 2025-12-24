@@ -99,11 +99,11 @@ export default function CollectionForm({ collection }: CollectionFormProps) {
             <input type="hidden" name="id" value={collection.id} />
             <Field>
               <FieldLabel>Name</FieldLabel>
-              <Input name="name" defaultValue={collection.name} />
+              <Input name="name" required defaultValue={collection.name} />
             </Field>
             <Field>
               <FieldLabel>Slug</FieldLabel>
-              <Input name="slug" defaultValue={collection.slug} />
+              <Input name="slug" required defaultValue={collection.slug} />
             </Field>
             <Field>
               <FieldLabel>Description</FieldLabel>

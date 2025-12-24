@@ -13,7 +13,7 @@ export default function CatalogGrid({
 }: CatalogGridProps) {
   return (
     <div className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
-      {products.map((p) => {
+      {products?.map((p) => {
         const img = p.images[0]?.url;
         const price = p.variants[0]?.priceCents ?? 0;
         return (

@@ -1,6 +1,10 @@
 import { createPage } from "../actions";
 import { redirect } from "next/navigation";
 import BlockEditor from "../components/BlockEditor";
+import PageContainer from "../../components/page-container";
+import PageHeader from "../../components/page-header";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 
 export default function NewPageForm() {
   async function handleSubmit(formData: FormData) {
@@ -13,14 +17,16 @@ export default function NewPageForm() {
   }
 
   return (
-    <form action={handleSubmit} className="space-y-4">
-      <h2 className="text-xl font-bold">Create New Page</h2>
-      <input name="slug" placeholder="Slug" required className="input" />
-      <input name="title" placeholder="Title" required className="input" />
-      <BlockEditor />
-      <button type="submit" className="btn">
-        Create
-      </button>
-    </form>
+    <PageContainer>
+      <PageHeader>Create a new page</PageHeader>
+      <form action={handleSubmit} className="space-y-4">
+        <Input name="slug" placeholder="Slug" required className="input" />
+        <Input name="title" placeholder="Title" required className="input" />
+        <BlockEditor />
+        <Button type="submit" className="btn">
+          Create
+        </Button>
+      </form>
+    </PageContainer>
   );
 }

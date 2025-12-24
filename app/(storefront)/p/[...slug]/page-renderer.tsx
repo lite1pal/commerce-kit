@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CatalogGrid, {
-  CatalogProduct,
-} from "@/app/(storefront)/components/catalog-grid";
+import CatalogGrid from "@/app/(storefront)/components/catalog-grid";
+import { CatalogProduct } from "@/lib/types/catalog-product";
 
 export type HeadingBlock = {
   type: "heading";
@@ -90,8 +89,8 @@ function CatalogBlockRenderer({ filters }: { filters: any }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(filters),
       });
-      const data = await res.json();
-      setProducts(data.products);
+      const data: CatalogProduct[] = await res.json();
+      setProducts(data);
     }
     fetchProducts();
   }, [JSON.stringify(filters)]);
