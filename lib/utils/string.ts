@@ -1,5 +1,9 @@
 // Pluralize a word (basic English rules)
 export function pluralize(word: string): string {
+  if (!/^[a-z]+$/.test(word)) {
+    throw new Error("pluralize() expects a lowercase word");
+  }
+
   if (word.endsWith("y") && !/[aeiou]y$/.test(word)) {
     return word.slice(0, -1) + "ies";
   }
