@@ -1,14 +1,9 @@
 import {
   Barcode,
   BookOpen,
-  Calendar,
   ChevronUp,
-  Home,
-  Inbox,
   Library,
   ScanBarcode,
-  Search,
-  Settings,
   User2,
   UsersRound,
 } from "lucide-react";

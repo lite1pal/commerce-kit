@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import CatalogGrid from "@/app/(storefront)/components/catalog-grid";
 import { Input } from "../../components/ui/input";
 import { Field, FieldLabel } from "../../components/ui/field";
 import type { CatalogProduct } from "@/lib/types/catalog-product";

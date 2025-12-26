@@ -4,7 +4,6 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import prisma from "@/lib/prisma";
 import { UpdateCollectionSchema } from "@/lib/schemas/collection";
 import { formDataToObject } from "@/lib/utils/form-data";
-import z from "zod";
 
 export async function getCollections() {
   await requireAdmin();

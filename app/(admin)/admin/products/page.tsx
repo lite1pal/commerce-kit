@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { deleteProduct, toggleProductActive } from "./actions";
 import prisma from "@/lib/prisma";
 import PageHeader from "../components/page-header";
 import PageContainer from "../components/page-container";

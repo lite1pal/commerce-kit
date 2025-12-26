@@ -1,6 +1,5 @@
 "use client";
 
-import { Product } from "@/generated/prisma/client";
 import { formatDateForAdminTables } from "@/lib/utils/time";
 import { ColumnDef } from "@tanstack/react-table";
 import {

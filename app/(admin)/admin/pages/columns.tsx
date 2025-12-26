@@ -12,7 +12,6 @@ import {
 import { Button } from "../components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { UserRole } from "@/generated/prisma/enums";
 import { togglePageVisible } from "./actions";
 
 export const columns: ColumnDef<{
