@@ -5,19 +5,28 @@ import prisma from "@/lib/prisma";
 import { UpdateCollectionSchema } from "@/lib/schemas/collection";
 import { formDataToObject } from "@/lib/utils/form-data";
 
-export async function getCollections() {
+export async function getCollections(page: number, limit: number) {
   await requireAdmin();
 
-  return prisma.collection.findMany({
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+  const skip = (page - 1) * limit;
+
+  const [data, totalCount] = await Promise.all([
+    prisma.collection.findMany({
+      take: limit,
+      skip,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.collection.count(),
+  ]);
+
+  return { data, totalCount };
 }
 
 export async function getCollectionById(id: string) {
