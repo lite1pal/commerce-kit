@@ -6,8 +6,19 @@ import { columns } from "./columns";
 
 export const metadata = { title: "Collections" };
 
-export default async function CollectionsPage() {
-  const collections = await getCollections();
+const limit = 10;
+
+type CollectionsPageProps = {
+  searchParams: {
+    page?: string;
+  };
+};
+
+export default async function CollectionsPage({
+  searchParams,
+}: CollectionsPageProps) {
+  const page = parseInt(searchParams?.page ?? "1");
+  const collections = await getCollections(page, limit);
 
   return (
     <PageContainer>

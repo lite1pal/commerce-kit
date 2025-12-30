@@ -5,10 +5,14 @@ import prisma from "@/lib/prisma";
 import { UpdateCollectionSchema } from "@/lib/schemas/collection";
 import { formDataToObject } from "@/lib/utils/form-data";
 
-export async function getCollections() {
+export async function getCollections(page: number, limit: number) {
   await requireAdmin();
 
+  const skip = page > 1 ? page * limit : 0;
+
   return prisma.collection.findMany({
+    take: limit,
+    skip,
     select: {
       id: true,
       name: true,
