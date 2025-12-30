@@ -18,22 +18,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/(admin)/admin/components/ui/table";
+import type { Table as TanstackTable } from "@tanstack/react-table";
+import { usePathname, useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  currentPage: number;
+  totalPages: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  currentPage,
+  totalPages,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
   });
+
+  const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <div>
@@ -87,23 +96,28 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(`${pathname}?page=${currentPage - 1}`)}
+            disabled={currentPage <= 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(`${pathname}?page=${currentPage + 1}`)}
+            disabled={currentPage >= totalPages}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

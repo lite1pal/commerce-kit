@@ -18,13 +18,19 @@ export default async function CollectionsPage({
   searchParams,
 }: CollectionsPageProps) {
   const page = parseInt(searchParams?.page ?? "1");
-  const collections = await getCollections(page, limit);
+  const { data: collections, totalCount } = await getCollections(page, limit);
+  const totalPages = Math.ceil(totalCount / limit);
 
   return (
     <PageContainer>
       <PageHeader>Collections</PageHeader>
 
-      <DataTable columns={columns} data={collections} />
+      <DataTable
+        columns={columns}
+        data={collections}
+        currentPage={page}
+        totalPages={totalPages}
+      />
     </PageContainer>
   );
 }

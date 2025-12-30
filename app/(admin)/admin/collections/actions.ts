@@ -8,20 +8,25 @@ import { formDataToObject } from "@/lib/utils/form-data";
 export async function getCollections(page: number, limit: number) {
   await requireAdmin();
 
-  const skip = page > 1 ? page * limit : 0;
+  const skip = (page - 1) * limit;
 
-  return prisma.collection.findMany({
-    take: limit,
-    skip,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+  const [data, totalCount] = await Promise.all([
+    prisma.collection.findMany({
+      take: limit,
+      skip,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.collection.count(),
+  ]);
+
+  return { data, totalCount };
 }
 
 export async function getCollectionById(id: string) {
