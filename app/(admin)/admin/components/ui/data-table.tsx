@@ -5,7 +5,6 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel,
 } from "@tanstack/react-table";
 
 import { Button } from "@/app/(admin)/admin/components/ui/button";
@@ -18,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/(admin)/admin/components/ui/table";
-import type { Table as TanstackTable } from "@tanstack/react-table";
 import { usePathname, useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
@@ -40,9 +38,6 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
   });
-
-  const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <div>
@@ -96,28 +91,43 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages}
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`${pathname}?page=${currentPage - 1}`)}
-            disabled={currentPage <= 1}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`${pathname}?page=${currentPage + 1}`)}
-            disabled={currentPage >= totalPages}
-          >
-            Next
-          </Button>
-        </div>
+
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
+    </div>
+  );
+}
+
+type PaginationProps = {
+  currentPage: number;
+  totalPages: number;
+};
+
+function Pagination({ totalPages, currentPage }: PaginationProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  return (
+    <div className="flex items-center justify-between space-x-2 py-4">
+      <div className="text-sm text-muted-foreground">
+        Page {currentPage} of {totalPages}
+      </div>
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`${pathname}?page=${currentPage - 1}`)}
+          disabled={currentPage <= 1}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`${pathname}?page=${currentPage + 1}`)}
+          disabled={currentPage >= totalPages}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

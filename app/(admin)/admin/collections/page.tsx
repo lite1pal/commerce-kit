@@ -9,16 +9,17 @@ export const metadata = { title: "Collections" };
 const limit = 10;
 
 type CollectionsPageProps = {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
-  };
+  }>;
 };
 
 export default async function CollectionsPage({
   searchParams,
 }: CollectionsPageProps) {
-  const page = parseInt(searchParams?.page ?? "1");
-  const { data: collections, totalCount } = await getCollections(page, limit);
+  const pageParam = (await searchParams).page;
+  const page = parseInt(pageParam ?? "1");
+  const { data, totalCount } = await getCollections(page, limit);
   const totalPages = Math.ceil(totalCount / limit);
 
   return (
@@ -26,10 +27,11 @@ export default async function CollectionsPage({
       <PageHeader>Collections</PageHeader>
 
       <DataTable
+        key={page}
         columns={columns}
-        data={collections}
-        currentPage={page}
+        data={data}
         totalPages={totalPages}
+        currentPage={page}
       />
     </PageContainer>
   );
